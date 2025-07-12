@@ -1106,6 +1106,13 @@
     .social-media-icon {
       margin-right: 5px;
     }
+
+.clickable-button.admin-profile {
+  background: #673ab7;
+}
+.clickable-button.admin-profile:hover {
+  background: #5e35b1;
+}
   </style>
 </head>
 <body>
@@ -1185,6 +1192,8 @@
         
         <!-- Tombol Admin yang akan muncul hanya untuk admin -->
         <button id="adminBtn" class="clickable-button" style="display:none; margin-bottom:15px;">👑 Panel Admin</button>
+        <!-- Tambahkan setelah tombol adminBtn -->
+        <button id="adminProfileBtn" class="clickable-button admin-profile" style="margin-bottom:15px;">👑 Admin Profile</button>
         
         <div id="twoFactorSettings">
           <h4>🔍 Two-Factor Authentication</h4>
@@ -2031,6 +2040,11 @@
       setupEventListeners();
       updateAnalytics();
     });
+    
+// Admin profile button
+document.getElementById("adminProfileBtn").addEventListener('click', function() {
+  window.open('https://bloxarynai.github.io/Bloxaryn/', '_blank');
+});
 
     function setupEventListeners() {
       // Login buttons
