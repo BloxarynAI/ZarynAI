@@ -1,0 +1,3270 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>💬 ChatG</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .container {
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      background: white;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+    }
+    textarea, button, input, select {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      box-sizing: border-box;
+    }
+    button {
+      background: #4285f4;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    button:hover {
+      background: #3367d6;
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+    button.secondary {
+      background: #f1f3f4;
+      color: #333;
+    }
+    button.secondary:hover {
+      background: #e0e0e0;
+    }
+    button.danger {
+      background: #d32f2f;
+    }
+    button.danger:hover {
+      background: #b71c1c;
+    }
+    button.success {
+      background: #34a853;
+    }
+    button.success:hover {
+      background: #2d8e47;
+    }
+    button.warning {
+      background: #ff9800;
+    }
+    button.warning:hover {
+      background: #f57c00;
+    }
+    button.small {
+      padding: 8px 12px;
+      font-size: 0.9rem;
+    }
+    button.icon-only {
+      width: auto;
+      padding: 8px;
+      min-width: 40px;
+    }
+    button.icon-only span {
+      margin: 0;
+    }
+    #editorSection, #settingsPanel {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+    .chat-container {
+      margin-top: 0;
+      border: none;
+      border-radius: 0;
+      padding: 0;
+      background: white;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+    .chat-header {
+      font-size: 1.3rem;
+      margin-bottom: 0;
+      padding: 15px;
+      color: #4285f4;
+      text-align: center;
+      font-weight: bold;
+      border-bottom: 1px solid #e0e0e0;
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+    .chat-message {
+      margin-bottom: 15px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      line-height: 1.6;
+      position: relative;
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+    .user-message {
+      background-color: rgba(232, 240, 254, 0.9);
+      margin-left: 40px;
+      border-bottom-right-radius: 4px;
+    }
+    .ai-message {
+      background-color: rgba(241, 243, 244, 0.9);
+      margin-right: 40px;
+      border-bottom-left-radius: 4px;
+    }
+    .message-text {
+      display: block;
+    }
+    #chatHistory {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 0;
+      padding: 15px;
+    }
+    .timestamp {
+      font-size: 0.75rem;
+      color: #70757a;
+      margin-top: 5px;
+      text-align: right;
+    }
+    .typing-indicator {
+      display: inline-block;
+      margin-left: 5px;
+    }
+    .typing-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #70757a;
+      margin-right: 3px;
+      animation: typingAnimation 1.4s infinite ease-in-out;
+    }
+    .typing-dot:nth-child(1) {
+      animation-delay: 0s;
+    }
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    @keyframes typingAnimation {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
+    .error-message {
+      color: #d32f2f;
+      background-color: #fce8e6;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    .login-error {
+      color: #d32f2f;
+      background-color: #fce8e6;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 15px;
+      display: none;
+    }
+    .settings-tabs {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 15px;
+    }
+    .settings-tab {
+      padding: 10px 15px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+    .settings-tab.active {
+      border-bottom: 2px solid #4285f4;
+      font-weight: bold;
+    }
+    .settings-content {
+      display: none;
+    }
+    .settings-content.active {
+      display: block;
+    }
+    .admin-feature {
+      background: #f1f8e9;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      border-left: 4px solid #689f38;
+    }
+    .user-list {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      background: white;
+    }
+    .user-item {
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+      position: relative;
+    }
+    .user-item:last-child {
+      border-bottom: none;
+    }
+    .user-actions {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+    }
+    .user-actions button {
+      padding: 5px;
+      font-size: 0.8rem;
+      margin-left: 5px;
+      width: auto;
+      min-width: 30px;
+    }
+    /* Tambahkan di bagian <style> */
+.password-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.password-table thead tr {
+  background-color: #4285f4;
+  color: #ffffff;
+  text-align: left;
+}
+
+.password-table th,
+.password-table td {
+  padding: 12px 15px;
+}
+
+.password-table tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.password-table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.password-table tbody tr:last-of-type {
+  border-bottom: 2px solid #4285f4;
+}
+
+.password-table tbody tr:hover {
+  background-color: #f1f3f4;
+}
+
+.role-badge {
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.role-badge.user {
+  background-color: #34a853;
+  color: white;
+}
+
+.role-badge.admin {
+  background-color: #d32f2f;
+  color: white;
+}
+
+.password-text {
+  font-family: monospace;
+  letter-spacing: 1px;
+}
+
+.copy-btn {
+  background: #f1f3f4;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 0.8em;
+  margin-left: 5px;
+}
+
+.copy-btn:hover {
+  background: #e0e0e0;
+}
+    .delete-btn {
+      background: #d32f2f;
+    }
+    .edit-btn {
+      background: #ff9800;
+    }
+    .user-details {
+      margin-right: 80px;
+    }
+    .user-stats {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 5px;
+    }
+    .search-box {
+      margin-bottom: 10px;
+    }
+    .user-count {
+      font-size: 0.9rem;
+      color: #4285f4;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .admin-feature h4 span {
+      float: right;
+      font-size: 0.9rem;
+      color: #888;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color:rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 600px;
+      border-radius: 8px;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close:hover {
+      color: black;
+    }
+    #userPasswordsTable {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    #userPasswordsTable th, #userPasswordsTable td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    #userPasswordsTable th {
+      background-color: #f2f2f2;
+    }
+    #userPasswordsTable tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    /* Enhanced text formatting styles */
+    .bold {
+      font-weight: bold;
+    }
+    .italic {
+      font-style: italic;
+    }
+    .underline {
+      text-decoration: underline;
+    }
+    .strikethrough {
+      text-decoration: line-through;
+    }
+    .code-block {
+      background: #f1f3f4;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      margin: 10px 0;
+    }
+    .inline-code {
+      background: #f1f3f4;
+      padding: 2px 4px;
+      border-radius: 2px;
+      font-family: monospace;
+    }
+    .blockquote {
+      border-left: 3px solid #ddd;
+      padding-left: 15px;
+      margin: 10px 0;
+      color: #666;
+    }
+    /* ChatGPT-like formatting */
+    .chatgpt-header {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .chatgpt-subheader {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin: 15px 0 10px 0;
+      color: #333;
+    }
+    .chatgpt-list {
+      margin-left: 20px;
+      margin-bottom: 15px;
+    }
+    .chatgpt-list-item {
+      margin-bottom: 8px;
+      line-height: 1.5;
+      position: relative;
+      padding-left: 20px;
+    }
+    .chatgpt-list-item:before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      font-size: 1.2em;
+      line-height: 1;
+    }
+    .chatgpt-divider {
+      border-top: 1px solid #e0e0e0;
+      margin: 15px 0;
+    }
+    /* Input area styling */
+    #inputArea {
+      padding: 15px;
+      background: white;
+      border-top: 1px solid #ddd;
+    }
+    #inputArea button {
+      margin-bottom: 0;
+    }
+    /* New features styling */
+    .formatting-toolbar {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 5px;
+      flex-wrap: wrap;
+    }
+    .formatting-toolbar button {
+      width: auto;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      background: #e0e0e0;
+      color: #333;
+    }
+    .formatting-toolbar button:hover {
+      background: #d0d0d0;
+    }
+    .dark-mode {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+    .dark-mode .container {
+      background-color: #1e1e1e;
+      border-color: #333;
+    }
+    .dark-mode .chat-container {
+      background-color: #1e1e1e;
+    }
+    .dark-mode .chat-header {
+      color: #8ab4f8;
+      border-color: #333;
+    }
+    .dark-mode .user-message {
+      background-color: #2c3e50;
+      color: #e0e0e0;
+    }
+    .dark-mode .ai-message {
+      background-color: #34495e;
+      color: #e0e0e0;
+    }
+    .dark-mode #inputArea {
+      background-color: #1e1e1e;
+      border-color: #333;
+    }
+    .dark-mode textarea, 
+    .dark-mode input, 
+    .dark-mode select {
+      background-color: #2d2d2d;
+      color: #e0e0e0;
+      border-color: #444;
+    }
+    .dark-mode .settings-panel {
+      background-color: #252525;
+    }
+    .dark-mode .admin-feature {
+      background-color: #2d3a3a;
+      border-left-color: #4caf50;
+    }
+    .dark-mode .user-list {
+      background-color: #252525;
+      border-color: #444;
+    }
+    .dark-mode .modal-content {
+      background-color: #252525;
+      color: #e0e0e0;
+    }
+    .dark-mode .close {
+      color: #aaa;
+    }
+    .dark-mode .close:hover {
+      color: #fff;
+    }
+    .dark-mode #userPasswordsTable th,
+    .dark-mode #userPasswordsTable td {
+      border-color: #444;
+    }
+    .dark-mode #userPasswordsTable th {
+      background-color: #333;
+    }
+    .dark-mode #userPasswordsTable tr:nth-child(even) {
+      background-color: #2d2d2d;
+    }
+    .attachment-btn {
+      background: #f1f3f4;
+      color: #333;
+      margin-right: 5px;
+    }
+    .attachment-btn:hover {
+      background: #e0e0e0;
+    }
+    .message-actions {
+      position: absolute;
+      right: 10px;
+      top: 5px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .chat-message:hover .message-actions {
+      opacity: 1;
+    }
+    .message-actions button {
+      padding: 2px 5px;
+      font-size: 0.8rem;
+      margin-left: 3px;
+      width: auto;
+      background: rgba(0,0,0,0.1);
+      color: #333;
+    }
+    .message-actions button:hover {
+      background: rgba(0,0,0,0.2);
+    }
+    .dark-mode .message-actions button {
+      background: rgba(255,255,255,0.1);
+      color: #e0e0e0;
+    }
+    .dark-mode .message-actions button:hover {
+      background: rgba(255,255,255,0.2);
+    }
+    .thread-indicator {
+      font-size: 0.8rem;
+      color: #70757a;
+      margin-top: 5px;
+      cursor: pointer;
+    }
+    .thread-indicator:hover {
+      text-decoration: underline;
+    }
+    .dark-mode .thread-indicator {
+      color: #aaa;
+    }
+    .thread-message {
+      margin-left: 20px;
+      border-left: 2px solid #ddd;
+      padding-left: 10px;
+    }
+    .dark-mode .thread-message {
+      border-left-color: #444;
+    }
+    .saved-chats {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      background: white;
+      margin-bottom: 15px;
+    }
+    .dark-mode .saved-chats {
+      background-color: #252525;
+      border-color: #444;
+    }
+    .saved-chat-item {
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+    }
+    .saved-chat-item:last-child {
+      border-bottom: none;
+    }
+    .saved-chat-item:hover {
+      background-color: #f5f5f5;
+    }
+    .dark-mode .saved-chat-item:hover {
+      background-color: #333;
+    }
+    .saved-chat-title {
+      font-weight: bold;
+    }
+    .saved-chat-preview {
+      font-size: 0.8rem;
+      color: #666;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .dark-mode .saved-chat-preview {
+      color: #aaa;
+    }
+    .language-selector {
+      width: auto;
+      margin-left: 10px;
+    }
+    .theme-selector {
+      width: auto;
+      margin-left: 10px;
+    }
+    #broadcastModal textarea {
+      min-height: 100px;
+    }
+    #userRolesModal select {
+      margin-bottom: 10px;
+    }
+    .analytics-chart {
+      width: 100%;
+      height: 200px;
+      background: #f5f5f5;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: flex-end;
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .dark-mode .analytics-chart {
+      background: #252525;
+    }
+    .chart-bar {
+      flex: 1;
+      background: #4285f4;
+      margin: 0 2px;
+      position: relative;
+    }
+    .chart-bar-label {
+      position: absolute;
+      bottom: -20px;
+      width: 100%;
+      text-align: center;
+      font-size: 0.7rem;
+    }
+    .backup-options {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .backup-options button {
+      flex: 1;
+    }
+    .persona-selector {
+      margin-bottom: 15px;
+    }
+    #fileUpload {
+      display: none;
+    }
+    .file-upload-label {
+      display: inline-block;
+      padding: 8px 15px;
+      background: #f1f3f4;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    .dark-mode .file-upload-label {
+      background: #333;
+      color: #e0e0e0;
+    }
+    .file-upload-label:hover {
+      background: #e0e0e0;
+    }
+    .dark-mode .file-upload-label:hover {
+      background: #444;
+    }
+    .attachment-preview {
+      display: flex;
+      align-items: center;
+      margin-top: 5px;
+      padding: 5px;
+      background: #f5f5f5;
+      border-radius: 4px;
+    }
+    .dark-mode .attachment-preview {
+      background: #333;
+    }
+    .attachment-preview img {
+      max-width: 50px;
+      max-height: 50px;
+      margin-right: 10px;
+    }
+    .attachment-preview button {
+      width: auto;
+      padding: 2px 5px;
+      margin-left: auto;
+    }
+    .rate-limit-info {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 5px;
+    }
+    .dark-mode .rate-limit-info {
+      color: #aaa;
+    }
+    .error-log {
+      font-family: monospace;
+      white-space: pre-wrap;
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .dark-mode .error-log {
+      background: #252525;
+    }
+    .plugin-item {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .dark-mode .plugin-item {
+      border-color: #444;
+    }
+    .plugin-actions {
+      display: flex;
+      gap: 5px;
+      margin-top: 5px;
+    }
+    .plugin-actions button {
+      width: auto;
+      padding: 5px 10px;
+    }
+    #twoFactorQR img {
+      display: block;
+      margin: 0 auto;
+    }
+    #twoFactorQR p {
+      text-align: center;
+      font-family: monospace;
+      font-size: 1.2rem;
+      margin-top: 10px;
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .button-group button {
+      flex: 1;
+    }
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .button-row button {
+      flex: 1;
+    }
+    /* Style untuk badge role */
+.role-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.role-badge.admin {
+  background-color: #d32f2f;
+  color: white;
+}
+
+.role-badge.moderator {
+  background-color: #ff9800;
+  color: white;
+}
+
+.role-badge.user {
+  background-color: #4285f4;
+  color: white;
+}
+
+/* Style untuk tombol copy */
+.copy-password-btn {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 2px 5px;
+  cursor: pointer;
+  font-size: 0.8em;
+  transition: all 0.2s;
+}
+
+.copy-password-btn:hover {
+  background: #e0e0e0;
+}
+
+.password-text {
+  font-family: monospace;
+}
+
+/* Dark mode adjustments */
+.dark-mode .copy-password-btn {
+  border-color: #555;
+}
+
+.dark-mode .copy-password-btn:hover {
+  background: #444;
+}
+    /* New clickable button style */
+    .clickable-button {
+      background: #4285f4;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin: 5px;
+      transition: background 0.3s;
+    }
+    .clickable-button:hover {
+      background: #3367d6;
+    }
+    
+    /* Admin modal styling */
+    .admin-modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 90%;
+      max-width: 1200px;
+      max-height: 80vh;
+      overflow-y: auto;
+      border-radius: 8px;
+    }
+    .dark-mode .admin-modal-content {
+      background-color: #252525;
+      color: #e0e0e0;
+    }
+
+    /* Custom theme styles */
+    .custom-theme-options {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    
+    .custom-theme-preview {
+      width: 100%;
+      height: 100px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .custom-theme-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .custom-theme-preview-text {
+      position: absolute;
+      color: white;
+      font-weight: bold;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+      z-index: 2;
+    }
+    
+    .custom-theme-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.3);
+      z-index: 1;
+    }
+    
+    .custom-theme-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    #customThemeImage {
+      display: none;
+    }
+    
+    .color-picker-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .color-preview {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid #ddd;
+      cursor: pointer;
+    }
+    
+    .theme-presets {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .theme-preset {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    
+    .theme-preset:hover {
+      border-color: #333;
+    }
+    
+    .theme-preset.selected {
+      border-color: #4285f4;
+      transform: scale(1.1);
+    }
+    
+    #customThemeImagePreview {
+      max-width: 100%;
+      max-height: 200px;
+      display: none;
+      margin-top: 10px;
+      border-radius: 8px;
+    }
+
+    /* New styles for text color picker */
+    .text-color-picker {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .text-color-preview {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid #ddd;
+      cursor: pointer;
+      background-color: #333; /* Default text color */
+    }
+    
+    /* Background overlay for chat container */
+    .chat-background-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      opacity: 0.1;
+    }
+    
+    /* Ensure chat content is above the background */
+    .chat-container > *:not(.chat-background-overlay) {
+      position: relative;
+      z-index: 1;
+    }
+    
+    /* Custom background styles */
+    .custom-background {
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    
+    /* Creator info styles */
+    .creator-info {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 15px;
+      border-left: 4px solid #4285f4;
+    }
+    
+    .dark-mode .creator-info {
+      background-color: #2d3748;
+      border-left-color: #8ab4f8;
+    }
+    
+    .creator-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #4285f4;
+    }
+    
+    .dark-mode .creator-title {
+      color: #8ab4f8;
+    }
+    
+    .creator-list {
+      margin-left: 20px;
+    }
+    
+    .creator-list-item {
+      margin-bottom: 8px;
+      position: relative;
+      padding-left: 25px;
+    }
+    
+    .creator-list-item:before {
+      content: "•";
+      position: absolute;
+      left: 10px;
+      font-size: 1.2em;
+      color: #4285f4;
+    }
+    
+    .dark-mode .creator-list-item:before {
+      color: #8ab4f8;
+    }
+    
+    .social-media-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .social-media-item {
+      background-color: #e3f2fd;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+    
+    .dark-mode .social-media-item {
+      background-color: #2d4361;
+    }
+    
+    .social-media-icon {
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Login Section -->
+  <div class="container" id="loginContainer">
+    <h2>💬 Login ke ChatG</h2>
+    <div id="loginError" class="login-error"></div>
+    <input type="text" id="username" placeholder="👤 Nama Pengguna (min 3 karakter)" required minlength="3">
+    <input type="email" id="email" placeholder="📧 Email (contoh: user@example.com)" required>
+    <input type="password" id="password" placeholder="🔑 Kata Sandi (min 6 karakter)" required minlength="6">
+    <div id="twoFactorSection" style="display: none;">
+      <input type="text" id="twoFactorCode" placeholder="🔍 Kode 2FA (6 digit)" maxlength="6">
+    </div>
+    <div class="button-group">
+      <button id="loginBtn" class="success">💬 Login</button>
+      <button id="googleLoginBtn" class="secondary">🌐 Login dengan Google</button>
+    </div>
+  </div>
+
+  <!-- ChatG Section -->
+  <div id="chatContainer" class="container" style="display:none">
+    <div class="chat-container">
+      <div class="chat-background-overlay" id="chatBackgroundOverlay"></div>
+      <div class="chat-header">
+        💬 ChatG
+      </div>
+      <div id="chatHistory">
+        <!-- Chat messages will appear here -->
+      </div>
+      <div id="inputArea">
+        <div class="formatting-toolbar">
+          <button id="boldBtn" title="Bold" class="secondary">B</button>
+          <button id="italicBtn" title="Italic" class="secondary">I</button>
+          <button id="underlineBtn" title="Underline" class="secondary">U</button>
+          <button id="codeBtn" title="Code" class="secondary">{ }</button>
+          <button id="linkBtn" title="Link" class="secondary">🔗</button>
+          <label for="fileUpload" class="file-upload-label secondary">📎 Lampirkan</label>
+          <input type="file" id="fileUpload" accept="image/*,.pdf,.doc,.docx,.txt">
+          <select id="languageSelector" class="language-selector">
+            <option value="id">🇮🇩 Indonesia</option>
+            <option value="en">🇺🇸 English</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+            <option value="ko">🇰🇷 한국어</option>
+            <option value="ja">🇯🇵 日本語</option>
+          </select>
+          <button id="themeToggle" class="theme-selector secondary">🌙 Mode Gelap</button>
+        </div>
+        <div id="attachmentPreview"></div>
+        <textarea id="userInput" rows="3" placeholder="💬 Tulis pertanyaan di sini... (Shift+Enter untuk baris baru)"></textarea>
+        <div class="button-row">
+          <button id="sendBtn" class="success">💬 Kirim</button>
+          <button id="saveChatBtn" class="secondary">💾 Simpan Chat</button>
+          <button id="settingsBtn" class="secondary">⚙️ Pengaturan</button>
+        </div>
+        <div class="rate-limit-info">
+          Permintaan: <span id="requestCount">0</span>/<span id="requestLimit">10</span> per menit
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel Pengaturan Biasa -->
+    <div id="settingsPanel">
+      <div class="settings-tabs">
+        <div class="settings-tab active" data-tab="account">Akun</div>
+        <div class="settings-tab" data-tab="saved">Percakapan</div>
+        <div class="settings-tab" data-tab="appearance">Tampilan</div>
+      </div>
+      
+      <!-- Tab Pengaturan Akun -->
+      <div id="accountTab" class="settings-content active">
+        <h3>⚙️ Pengaturan Akun</h3>
+        <p><strong>👤 Nama Pengguna:</strong> <span id="infoUsername">-</span></p>
+        <p><strong>📧 Email:</strong> <span id="infoEmail">-</span></p>
+        <p><strong>🔑 Password:</strong> <span id="infoPassword">-</span></p>
+        
+        <!-- Tombol Admin yang akan muncul hanya untuk admin -->
+        <button id="adminBtn" class="clickable-button" style="display:none; margin-bottom:15px;">👑 Panel Admin</button>
+        
+        <div id="twoFactorSettings">
+          <h4>🔍 Two-Factor Authentication</h4>
+          <div id="twoFactorStatus"></div>
+          <button id="toggle2FABtn" class="secondary">Aktifkan 2FA</button>
+          <div id="twoFactorQR" style="display: none; margin-top: 10px;"></div>
+        </div>
+        <div class="button-row">
+          <button id="logoutBtn" class="secondary">👋 Logout</button>
+          <button id="clearAccountBtn" class="danger">🗑️ Hapus Akun</button>
+          <button id="closeSettingsBtn" class="secondary">❌ Tutup</button>
+        </div>
+      </div>
+      
+      <!-- Tab Percakapan Tersimpan -->
+      <div id="savedTab" class="settings-content">
+        <h3>💾 Percakapan Tersimpan</h3>
+        <input type="text" id="savedChatSearch" placeholder="🔍 Cari percakapan..." class="search-box">
+        <div class="saved-chats" id="savedChatsList">
+          <div class="saved-chat-item">Memuat percakapan tersimpan...</div>
+        </div>
+        <button id="clearSavedChatsBtn" class="danger">🗑️ Hapus Semua</button>
+      </div>
+      
+      <!-- Tab Tampilan -->
+      <div id="appearanceTab" class="settings-content">
+        <h3>🎨 Pengaturan Tampilan</h3>
+        <div class="persona-selector">
+          <h4>👤 Persona AI</h4>
+          <select id="personaSelector" class="secondary">
+            <option value="assistant">Asisten (Default)</option>
+            <option value="friend">Teman</option>
+            <option value="expert">Ahli</option>
+            <option value="creative">Kreatif</option>
+          </select>
+        </div>
+        <div>
+          <h4>🎨 Tema</h4>
+          <select id="themeSelector" class="secondary">
+            <option value="light">Terang</option>
+            <option value="dark">Gelap</option>
+            <option value="system">Sistem</option>
+            <option value="custom">Kustom</option>
+          </select>
+        </div>
+        <div id="customThemeSection" style="display: none;">
+         <h4>🎨 Tampilan Kustom</h4>
+          <div class="custom-theme-options">
+            <div class="color-picker-container">
+              <label for="accentColor">Warna Aksen:</label>
+              <input type="color" id="accentColor" value="#4285f4">
+              <div class="color-preview" id="colorPreview" style="background-color: #4285f4;"></div>
+            </div>
+            
+            <div>
+              <label>Latar Belakang Kustom:</label>
+              <div class="custom-theme-preview" id="themeGalleryBtn">
+                <div class="custom-theme-overlay"></div>
+                <div class="custom-theme-preview-text">Pilih dari Galeri</div>
+              </div>
+              <input type="file" id="customThemeImage" accept="image/*">
+              <img id="customThemeImagePreview" alt="Pratinjau Gambar Kustom">
+              
+              <div class="theme-presets">
+                <div class="theme-preset selected" style="background-color: #4285f4;" data-color="#4285f4"></div>
+                <div class="theme-preset" style="background-color: #34a853;" data-color="#34a853"></div>
+                <div class="theme-preset" style="background-color: #ea4335;" data-color="#ea4335"></div>
+                <div class="theme-preset" style="background-color: #fbbc05;" data-color="#fbbc05"></div>
+                <div class="theme-preset" style="background-color: #673ab7;" data-color="#673ab7"></div>
+              </div>
+            </div>
+            
+            <div class="text-color-picker">
+              <label for="textColor">Warna Teks:</label>
+              <input type="color" id="textColor" value="#333333">
+              <div class="text-color-preview" id="textColorPreview"></div>
+            </div>
+            
+            <div class="custom-theme-actions">
+              <button id="applyCustomThemeBtn" class="success">💾 Terapkan Tema</button>
+              <button id="resetCustomThemeBtn" class="secondary">🔄 Reset</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal untuk Admin Panel -->
+    <div id="adminModal" class="modal">
+      <div class="admin-modal-content">
+        <span class="close">&times;</span>
+        <h3>👑 Panel Admin</h3>
+        
+        <div class="admin-feature">        
+          <button id="viewPasswordsBtn" class="danger">🔑 Lihat Password Pengguna</button>
+        </div>
+        
+        <div class="admin-feature">
+          <h4>💻 Editor Kode (Admin)</h4>
+          <textarea rows="10" id="codeEditor" placeholder="📝 Tulis kodenya di sini..."></textarea>
+          <div class="button-row">
+            <button id="saveEditorBtn" class="success">💾 Simpan ke File</button>
+            <select id="fileType" class="secondary">
+              <option value="txt">📄 .txt</option>
+              <option value="html">📄 .html</option>
+              <option value="js">📄 .js</option>
+              <option value="css">📄 .css</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="admin-feature">
+          <h4>💻 Editor Kode ChatG</h4>
+          <textarea rows="10" id="adminCodeEditor" placeholder="📝 Masukkan kode JavaScript untuk mengubah perilaku ChatG..."></textarea>
+          <div class="button-row">
+            <button id="executeCodeBtn" class="success">💬 Jalankan Kode</button>
+            <button id="saveCodeBtn" class="secondary">💾 Simpan Perubahan</button>
+          </div>
+        </div>
+        
+        <div class="admin-feature">
+          <h4>📂 Kelola File</h4>
+          <select id="adminFileType" class="secondary">
+            <option value="html">📄 File HTML (.html)</option>
+            <option value="css">📄 File CSS (.css)</option>
+            <option value="js">📄 File JavaScript (.js)</option>
+          </select>
+          <textarea rows="5" id="adminFileEditor" placeholder="📝 Isi file akan muncul di sini..."></textarea>
+          <div class="button-row">
+            <button id="loadFileBtn" class="secondary">🔍 Muat File</button>
+            <button id="saveFileBtn" class="success">💾 Simpan File</button>
+          </div>
+        </div>
+        
+        <div class="admin-feature">
+          <h4>👥 Manajemen Pengguna</h4>
+          <div class="user-count">Total Pengguna: <span id="userCount">0</span></div>
+          <input type="text" id="userSearch" class="search-box" placeholder="🔍 Cari pengguna...">
+          <div class="user-list" id="userList">
+            <div class="user-item">Memuat daftar pengguna...</div>
+          </div>
+          <div class="button-row">
+            <button id="refreshUsersBtn" class="secondary">🔄 Segarkan</button>
+            <button id="exportUsersBtn" class="secondary">📤 Ekspor Data</button>
+            <button id="broadcastBtn" class="warning">📢 Broadcast</button>
+            <button id="manageRolesBtn" class="secondary">⚙️ Kelola Peran</button>
+          </div>
+        </div>
+        
+        <div class="admin-feature">
+          <h4>📈 Analytics Dashboard</h4>
+          <div class="analytics-chart" id="usageChart">
+            <div class="chart-bar" style="height: 30%;"><div class="chart-bar-label">Sen</div></div>
+            <div class="chart-bar" style="height: 50%;"><div class="chart-bar-label">Sel</div></div>
+            <div class="chart-bar" style="height: 70%;"><div class="chart-bar-label">Rab</div></div>
+            <div class="chart-bar" style="height: 90%;"><div class="chart-bar-label">Kam</div></div>
+            <div class="chart-bar" style="height: 60%;"><div class="chart-bar-label">Jum</div></div>
+            <div class="chart-bar" style="height: 40%;"><div class="chart-bar-label">Sab</div></div>
+            <div class="chart-bar" style="height: 20%;"><div class="chart-bar-label">Min</div></div>
+          </div>
+          <div>
+            <strong>Statistik:</strong>
+            <p>Total Percakapan: <span id="totalConversations">0</span></p>
+            <p>Pengguna Aktif: <span id="activeUsers">0</span>/<span id="totalUsers">0</span></p>
+            <p>Permintaan Hari Ini: <span id="requestsToday">0</span></p>
+          </div>
+        </div>
+        
+        <div class="admin-feature">
+          <h4>🔑 Riwayat Login Pengguna
+            <span id="clearLoginHistory" class="icon-button danger" title="Hapus Riwayat">🗑️</span>
+            <span id="refreshLoginHistory" class="icon-button secondary" title="Segarkan">🔄</span>
+          </h4>
+          <div class="user-list" id="loginHistoryList"></div>
+        </div>
+        
+        <div class="admin-feature">
+          <h4>💾 Backup & Restore
+            <span id="refreshBackup" class="icon-button secondary" title="Segarkan">🔄</span>
+          </h4>
+          <div class="button-row">
+            <button id="backupBtn" class="success">💾 Backup Data</button>
+            <button id="restoreBtn" class="secondary">🔄 Restore Data</button>
+          </div>
+          <div id="backupStatus"></div>
+        </div>
+        
+        <div class="admin-feature">
+          <h4>⚠️ Error Logs</h4>
+          <div class="error-log" id="errorLogs">
+            Memuat log error...
+          </div>
+          <button id="clearErrorLogsBtn" class="danger">🗑️ Bersihkan Log</button>
+        </div>
+        
+        <div class="admin-feature">
+          <h4>🔌 Plugin System</h4>
+          <div id="pluginsList">
+            <div class="plugin-item">
+              <strong>Markdown Support</strong>
+              <p>Tambahkan dukungan format markdown</p>
+              <div class="plugin-actions">
+                <button class="toggle-plugin-btn secondary" data-plugin="markdown">Aktifkan</button>
+                <button class="configure-plugin-btn secondary" data-plugin="markdown">Konfigurasi</button>
+              </div>
+            </div>
+          </div>
+          <button id="addPluginBtn" class="secondary">➕ Tambah Plugin</button>
+        </div>
+        
+        <div class="button-row" style="margin-top: 20px;">
+          <button class="secondary" id="closeAdminModalBtn">❌ Tutup Panel Admin</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal untuk menampilkan password pengguna -->
+    <div id="passwordModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>🔑 Data Password Pengguna</h3>
+        <table class="password-table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Password</th>
+              <th>Role</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="userPasswordsBody">
+            <tr>
+              <td>admin</td>
+              <td>admin@gmail.com</td>
+              <td class="password-text">admin123</td>
+              <td><span class="role-badge admin">Admin</span></td>
+              <td><button class="copy-btn" data-password="admin123">Salin</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="button-row" style="margin-top: 15px;">
+          <button class="secondary" id="closePasswordModalBtn">❌ Tutup</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal untuk broadcast message -->
+    <div id="broadcastModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>📢 Broadcast Pesan</h3>
+        <textarea id="broadcastMessage" placeholder="📝 Tulis pesan yang akan dikirim ke semua pengguna..."></textarea>
+        <div class="button-row">
+          <button id="sendBroadcastBtn" class="success">💬 Kirim Broadcast</button>
+          <button class="secondary" id="cancelBroadcastBtn">❌ Batal</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal untuk manage roles -->
+    <div id="userRolesModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>⚙️ Kelola Peran Pengguna</h3>
+        <div class="user-list" id="roleUserList"></div>
+        <select id="roleSelector" class="secondary">
+          <option value="user">User</option>
+          <option value="moderator">Moderator</option>
+          <option value="admin">Admin</option>
+        </select>
+        <div class="button-row">
+          <button id="saveUserRoleBtn" class="success">💾 Simpan Peran</button>
+          <button class="secondary" id="cancelUserRoleBtn">❌ Batal</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal untuk saved chat -->
+    <div id="savedChatModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>💾 Percakapan Tersimpan</h3>
+        <div id="savedChatContent"></div>
+        <div class="button-row">
+          <button id="deleteSavedChatBtn" class="danger">🗑️ Hapus</button>
+          <button id="exportSavedChatBtn" class="secondary">📤 Ekspor</button>
+          <button class="secondary" id="closeSavedChatModalBtn">❌ Tutup</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal untuk 2FA setup -->
+    <div id="twoFactorModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>🔍 Two-Factor Authentication</h3>
+        <div id="twoFactorQRContent"></div>
+        <p>Scan QR code dengan aplikasi authenticator Anda atau masukkan kode manual:</p>
+        <p id="twoFactorManualCode" style="font-family: monospace; font-size: 1.2rem; text-align: center;"></p>
+        <p>Masukkan kode verifikasi dari aplikasi authenticator Anda:</p>
+        <input type="text" id="twoFactorVerifyCode" placeholder="Kode verifikasi" maxlength="6">
+        <div class="button-row">
+          <button id="verify2FABtn" class="success">✅ Verifikasi</button>
+          <button class="secondary" id="cancel2FABtn">❌ Batal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Ganti dengan API key Anda
+    const API_KEY = "AIzaSyDgeyOQEHy5X02jlUKOjmMnzNuRjC93oJ4";
+    const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+
+    // Simulasikan backend sederhana
+    class ChatGBackend {
+      constructor() {
+        this.conversationHistory = [];
+        this.savedCode = "";
+        this.files = {
+          html: "<!DOCTYPE html>\n<html>\n<!-- File HTML default -->\n</html>",
+          css: "/* File CSS default */",
+          js: "// File JavaScript default"
+        };
+        this.users = [];
+        this.loginHistory = [];
+        this.savedChats = [];
+        this.errorLogs = [];
+        this.plugins = [];
+        this.rateLimits = {};
+        this.analytics = {
+          totalConversations: 0,
+          activeUsers: 0,
+          requestsToday: 0,
+          weeklyUsage: [30, 50, 70, 90, 60, 40, 20]
+        };
+      }
+
+      async generateResponse(userInput) {
+        // Check for creator-related questions first
+        const creatorResponse = this.checkForCreatorQuestions(userInput);
+        if (creatorResponse) {
+          return {
+            candidates: [{
+              content: {
+                parts: [{
+                  text: creatorResponse
+                }]
+              }
+            }]
+          };
+        }
+        
+        // Jika ada kode tersimpan, jalankan terlebih dahulu
+        if (this.savedCode) {
+          try {
+            new Function(this.savedCode)();
+            console.log("Kode tersimpan berhasil dijalankan");
+          } catch (e) {
+            console.error("Error executing saved code:", e);
+            this.logError(e);
+          }
+        }
+        
+        // Kirim permintaan ke Gemini API
+        try {
+          const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{
+                  text: userInput
+                }]
+              }]
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+          }
+          
+          const data = await response.json();
+          this.analytics.totalConversations++;
+          this.analytics.requestsToday++;
+          return data;
+        } catch (error) {
+          console.error('Error:', error);
+          this.logError(error);
+          return {
+            candidates: [{
+              content: {
+                parts: [{
+                  text: `Maaf, terjadi kesalahan: ${error.message}`
+                }]
+              }
+            }]
+          };
+        }
+      }
+      
+      checkForCreatorQuestions(userInput) {
+        const lowerInput = userInput.toLowerCase();
+        
+        // Check for questions about the creator
+        if (lowerInput.includes('siapa penciptamu') || 
+            lowerInput.includes('siapa pembuatmu') || 
+            lowerInput.includes('siapa yang membuatmu') ||
+            lowerInput.includes('siapa developer mu') ||
+            lowerInput.includes('siapa yang menciptakanmu')) {
+          return `🌟 <div class="creator-info">
+            <div class="creator-title">🤖 Tentang Saya:</div>
+            <p>Saya adalah ChatG, asisten virtual berbasis AI yang menggunakan teknologi Gemini API. Saya dibuat oleh tim kreatif berikut:</p>
+            
+            <div class="creator-list">
+              <div class="creator-list-item"><strong>Bloxaryn</strong> - Konseptor utama dan pengembang</div>
+              <div class="creator-list-item"><strong>Kimi</strong> - Spesialis AI dan pengembangan fitur</div>
+              <div class="creator-list-item"><strong>DeepSeek</strong> - Penyedia teknologi AI canggih</div>
+              <div class="creator-list-item"><strong>ChatGPT</strong> - Inspirasi dan kontributor ide</div>
+            </div>
+            
+            <div class="creator-title">💡 Ide Awal:</div>
+            <p>Proyek ini dimulai oleh Bloxaryn dengan visi menciptakan asisten AI yang mudah digunakan dengan antarmuka yang menarik.</p>
+          </div>`;
+        }
+        
+        // Check for questions about the AI's name
+        if (lowerInput.includes('siapa namamu') || 
+            lowerInput.includes('apa nama mu') || 
+            lowerInput.includes('kamu siapa') ||
+            lowerInput.includes('perkenalkan dirimu')) {
+          return `🤖 <div class="creator-info">
+            <div class="creator-title">✨ Perkenalan:</div>
+            <p>Halo! Saya adalah ChatG, asisten virtual berbasis AI yang menggunakan teknologi Gemini API.</p>
+            
+            <div class="creator-list">
+              <div class="creator-list-item">Dibuat oleh tim kreatif: <strong>Bloxaryn</strong>, <strong>Kimi</strong>, dan kolaborator lainnya</div>
+              <div class="creator-list-item">Didukung oleh teknologi <strong>DeepSeek</strong> dan <strong>ChatGPT</strong></div>
+              <div class="creator-list-item">API yang digunakan: <strong>Gemini AI</strong> dari Google</div>
+            </div>
+            
+            <p>Saya siap membantu Anda dengan berbagai pertanyaan dan kebutuhan informasi!</p>
+          </div>`;
+        }
+        
+        // Check for social media questions
+        if (lowerInput.includes('medsos pembuat') || 
+            lowerInput.includes('sosial media developer') || 
+            lowerInput.includes('instagram pembuat') ||
+            lowerInput.includes('tiktok pembuat') ||
+            lowerInput.includes('youtube pembuat') ||
+            lowerInput.includes('thread pembuat')) {
+          return `📱 <div class="creator-info">
+            <div class="creator-title">🌐 Media Sosial Developer:</div>
+            <p>Anda dapat menemukan pembuat saya (Bloxaryn) di platform berikut:</p>
+            
+            <div class="social-media-list">
+              <div class="social-media-item"><span class="social-media-icon">🎵</span> TikTok: @Bloxaryn</div>
+              <div class="social-media-item"><span class="social-media-icon">▶️</span> YouTube: DwikaHadiw.1234</div>
+              <div class="social-media-item"><span class="social-media-icon">📷</span> Instagram: @Bloxaryn</div>
+              <div class="social-media-item"><span class="social-media-icon">🧵</span> Thread: @Bloxaryn</div>
+            </div>
+            
+            <p>Jangan ragu untuk mengikuti dan mendukung kreator saya di platform tersebut!</p>
+          </div>`;
+        }
+        
+        return null;
+      }
+      
+      saveCode(code) {
+        this.savedCode = code;
+        return "Kode berhasil disimpan!";
+      }
+      
+      getFile(fileType) {
+        return this.files[fileType] || "File tidak ditemukan";
+      }
+      
+      saveFile(fileType, content) {
+        this.files[fileType] = content;
+        return "File berhasil disimpan!";
+      }
+      
+      addUser(user) {
+        // Cek apakah user sudah ada
+        const existingUser = this.users.find(u => u.email === user.email);
+        const timestamp = new Date().toISOString();
+        
+        if (existingUser) {
+          // Update last login time
+          existingUser.lastLogin = timestamp;
+          existingUser.loginCount = (existingUser.loginCount || 0) + 1;
+          this.loginHistory.push({
+            email: user.email,
+            action: 'login',
+            timestamp: timestamp
+          });
+          return existingUser;
+        } else {
+          // Tambahkan user baru
+          const newUser = {
+            ...user,
+            createdAt: timestamp,
+            lastLogin: timestamp,
+            loginCount: 1,
+            role: 'user',
+            twoFactorEnabled: false,
+            twoFactorSecret: this.generate2FASecret()
+          };
+          this.users.push(newUser);
+          this.loginHistory.push({
+            email: user.email,
+            action: 'register',
+            timestamp: timestamp
+          });
+          this.loginHistory.push({
+            email: user.email,
+            action: 'login',
+            timestamp: timestamp
+          });
+          this.analytics.activeUsers++;
+          this.analytics.totalUsers = this.users.length;
+          return newUser;
+        }
+      }
+      
+      getUsers(searchTerm = '') {
+        let users = [...this.users];
+        
+        // Urutkan berdasarkan last login (terbaru pertama)
+        users.sort((a, b) => new Date(b.lastLogin) - new Date(a.lastLogin));
+        
+        // Filter jika ada search term
+        if (searchTerm) {
+          const term = searchTerm.toLowerCase();
+          users = users.filter(user => 
+            user.username.toLowerCase().includes(term) || 
+            user.email.toLowerCase().includes(term)
+          );
+        }
+
+        return users;
+      }
+      
+      deleteUser(email) {
+        const index = this.users.findIndex(u => u.email === email);
+        if (index !== -1) {
+          this.users.splice(index, 1);
+          this.loginHistory.push({
+            email: email,
+            action: 'delete',
+            timestamp: new Date().toISOString()
+          });
+          this.analytics.totalUsers = this.users.length;
+          return true;
+        }
+        return false;
+      }
+      
+      getLoginHistory(email) {
+        return this.loginHistory.filter(entry => entry.email === email);
+      }
+      
+      getUserCount() {
+        return this.users.length;
+      }
+      
+      exportUserData() {
+        return {
+          users: this.users,
+          loginHistory: this.loginHistory,
+          analytics: this.analytics
+        };
+      }
+      
+      getAllUserPasswords() {
+        return this.users.map(user => ({
+          username: user.username,
+          email: user.email,
+          password: user.password,
+          role: user.role
+        }));
+      }
+      
+      saveChat(userEmail, title, content) {
+        const chat = {
+          id: Date.now().toString(),
+          userEmail,
+          title,
+          content,
+          createdAt: new Date().toISOString()
+        };
+        this.savedChats.push(chat);
+        return chat;
+      }
+      
+      getSavedChats(userEmail, searchTerm = '') {
+        let chats = this.savedChats.filter(chat => chat.userEmail === userEmail);
+        if (searchTerm) {
+          const term = searchTerm.toLowerCase();
+          chats = chats.filter(chat => 
+            chat.title.toLowerCase().includes(term) || 
+            chat.content.toLowerCase().includes(term)
+          );
+        }
+        return chats.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      }
+      
+      deleteSavedChat(chatId) {
+        const index = this.savedChats.findIndex(chat => chat.id === chatId);
+        if (index !== -1) {
+          this.savedChats.splice(index, 1);
+          return true;
+        }
+        return false;
+      }
+      
+      clearSavedChats(userEmail) {
+        this.savedChats = this.savedChats.filter(chat => chat.userEmail !== userEmail);
+      }
+      
+      logError(error) {
+        this.errorLogs.push({
+          timestamp: new Date().toISOString(),
+          message: error.message,
+          stack: error.stack
+        });
+      }
+      
+      getErrorLogs() {
+        return [...this.errorLogs].reverse();
+      }
+      
+      clearErrorLogs() {
+        this.errorLogs = [];
+      }
+      
+      generate2FASecret() {
+        // Ini hanya simulasi, dalam produksi gunakan library yang tepat
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+        let secret = '';
+        for (let i = 0; i < 16; i++) {
+          secret += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return secret;
+      }
+      
+      get2FAQRCode(email) {
+        const user = this.users.find(u => u.email === email);
+        if (!user) return null;
+        
+        // Simulasikan URL otpauth (dalam produksi gunakan library yang tepat)
+        const otpauthUrl = `otpauth://totp/ChatG:${email}?secret=${user.twoFactorSecret}&issuer=ChatG`;
+        
+        // Dalam implementasi nyata, Anda akan menghasilkan QR code dari URL ini
+        return {
+          secret: user.twoFactorSecret,
+          otpauthUrl: otpauthUrl
+        };
+      }
+      
+      verify2FACode(email, code) {
+        const user = this.users.find(u => u.email === email);
+        if (!user || !user.twoFactorSecret) return false;
+        
+        // Ini hanya simulasi sederhana
+        // Dalam implementasi nyata, gunakan library OTP seperti speakeasy atau otplib
+        return code === '123456'; // Selalu return true untuk kode 123456 dalam simulasi
+      }
+      
+      toggle2FA(email, enable) {
+        const user = this.users.find(u => u.email === email);
+        if (user) {
+          user.twoFactorEnabled = enable;
+          return true;
+        }
+        return false;
+      }
+      
+      broadcastMessage(message) {
+        // Dalam implementasi nyata, ini akan mengirim notifikasi ke semua pengguna
+        this.loginHistory.push({
+          email: 'system',
+          action: 'broadcast',
+          message: message,
+          timestamp: new Date().toISOString()
+        });
+        return true;
+      }
+      
+      updateUserRole(email, role) {
+        const user = this.users.find(u => u.email === email);
+        if (user) {
+          user.role = role;
+          return true;
+        }
+        return false;
+      }
+      
+      checkRateLimit(email) {
+        const now = Date.now();
+        const window = 60 * 1000; // 1 menit
+        const limit = 10; // 10 request per menit
+        
+        if (!this.rateLimits[email]) {
+          this.rateLimits[email] = {
+            count: 1,
+            startTime: now
+          };
+          return { allowed: true, remaining: limit - 1 };
+        }
+        
+        const userLimit = this.rateLimits[email];
+        
+        if (now - userLimit.startTime > window) {
+          // Reset counter
+          userLimit.count = 1;
+          userLimit.startTime = now;
+          return { allowed: true, remaining: limit - 1 };
+        }
+        
+        if (userLimit.count >= limit) {
+          return { allowed: false, remaining: 0 };
+        }
+        
+        userLimit.count++;
+        return { allowed: true, remaining: limit - userLimit.count };
+      }
+      
+      backupData() {
+        return {
+          users: this.users,
+          loginHistory: this.loginHistory,
+          savedChats: this.savedChats,
+          analytics: this.analytics,
+          files: this.files,
+          savedCode: this.savedCode,
+          timestamp: new Date().toISOString()
+        };
+      }
+      
+      restoreData(data) {
+        if (data.users) this.users = data.users;
+        if (data.loginHistory) this.loginHistory = data.loginHistory;
+        if (data.savedChats) this.savedChats = data.savedChats;
+        if (data.analytics) this.analytics = data.analytics;
+        if (data.files) this.files = data.files;
+        if (data.savedCode) this.savedCode = data.savedCode;
+        return true;
+      }
+    }
+
+    // Admin credentials
+    const ADMIN = {
+      username: "admin",
+      email: "admin@gmail.com",
+      password: "admin123",
+      role: "admin",
+      twoFactorEnabled: false
+    };
+
+    // State aplikasi
+    const appState = {
+      currentConversation: [],
+      isWaitingForResponse: false,
+      backend: new ChatGBackend(),
+      isAdmin: false,
+      currentUser: null,
+      currentAttachment: null,
+      darkMode: false,
+      currentPersona: 'assistant',
+      currentLanguage: 'id',
+      selectedChat: null,
+      selectedUserForRole: null,
+      customTheme: {
+        accentColor: '#4285f4',
+        backgroundImage: null,
+        textColor: '#333333'
+      }
+    };
+
+    // Initialize the app
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check for saved user
+      const savedUser = localStorage.getItem("chatg_user");
+      if (savedUser) {
+        try {
+          const user = JSON.parse(savedUser);
+          loginUser(user);
+        } catch (e) {
+          console.error("Error parsing saved user:", e);
+          localStorage.removeItem("chatg_user");
+        }
+      }
+
+      // Check for saved theme preference
+      const savedTheme = localStorage.getItem("chatg_theme");
+      if (savedTheme) {
+        setTheme(savedTheme);
+        document.getElementById("themeSelector").value = savedTheme;
+      }
+
+      // Check for saved persona
+      const savedPersona = localStorage.getItem("chatg_persona");
+      if (savedPersona) {
+        appState.currentPersona = savedPersona;
+        document.getElementById("personaSelector").value = savedPersona;
+      }
+
+      // Check for saved language
+      const savedLanguage = localStorage.getItem("chatg_language");
+      if (savedLanguage) {
+        appState.currentLanguage = savedLanguage;
+        document.getElementById("languageSelector").value = savedLanguage;
+      }
+
+      // Check for saved custom theme
+      const savedCustomTheme = localStorage.getItem("chatg_customTheme");
+      if (savedCustomTheme) {
+        try {
+          appState.customTheme = JSON.parse(savedCustomTheme);
+          if (appState.customTheme.accentColor) {
+            document.getElementById("accentColor").value = appState.customTheme.accentColor;
+            document.getElementById("colorPreview").style.backgroundColor = appState.customTheme.accentColor;
+          }
+          if (appState.customTheme.backgroundImage) {
+            document.getElementById("customThemeImagePreview").src = appState.customTheme.backgroundImage;
+            document.getElementById("customThemeImagePreview").style.display = "block";
+            document.getElementById("chatBackgroundOverlay").style.backgroundImage = `url(${appState.customTheme.backgroundImage})`;
+          }
+          if (appState.customTheme.textColor) {
+            document.getElementById("textColor").value = appState.customTheme.textColor;
+            document.getElementById("textColorPreview").style.backgroundColor = appState.customTheme.textColor;
+          }
+        } catch (e) {
+          console.error("Error parsing custom theme:", e);
+        }
+      }
+
+      setupEventListeners();
+      updateAnalytics();
+    });
+
+    function setupEventListeners() {
+      // Login buttons
+      document.getElementById("loginBtn").addEventListener('click', handleLogin);
+      document.getElementById("googleLoginBtn").addEventListener('click', googleLogin);
+      
+      // Chat buttons
+      document.getElementById("sendBtn").addEventListener('click', sendMessage);
+      document.getElementById("userInput").addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+      
+      // Settings buttons
+      document.getElementById("settingsBtn").addEventListener('click', toggleSettings);
+      document.getElementById("logoutBtn").addEventListener('click', logout);
+      document.getElementById("clearAccountBtn").addEventListener('click', clearAccount);
+      document.getElementById("closeSettingsBtn").addEventListener('click', closeSettings);
+      
+      // Editor buttons
+      document.getElementById("saveEditorBtn").addEventListener('click', saveEditorFile);
+      
+      // Admin feature buttons
+      document.getElementById("adminBtn").addEventListener('click', function() {
+        document.getElementById("adminModal").style.display = 'block';
+      });
+      document.getElementById("executeCodeBtn").addEventListener('click', executeAdminCode);
+      document.getElementById("saveCodeBtn").addEventListener('click', saveAdminCode);
+      document.getElementById("loadFileBtn").addEventListener('click', loadAdminFile);
+      document.getElementById("saveFileBtn").addEventListener('click', saveAdminFile);
+      document.getElementById("refreshUsersBtn").addEventListener('click', refreshUsersList);
+      document.getElementById("exportUsersBtn").addEventListener('click', exportUserData);
+      document.getElementById("viewPasswordsBtn").addEventListener('click', showUserPasswords);
+      
+      // Settings tabs
+      document.querySelectorAll(".settings-tab").forEach(tab => {
+        tab.addEventListener("click", switchSettingsTab);
+      });
+      
+      // User search
+      document.getElementById("userSearch").addEventListener('input', function() {
+        refreshUsersList(this.value);
+      });
+      
+      // Login history
+      document.getElementById("refreshLoginHistory").addEventListener('click', loadLoginHistory);
+      document.getElementById("clearLoginHistory").addEventListener('click', clearLoginHistory);
+      
+      // Modal close buttons
+      document.querySelectorAll('.close').forEach(closeBtn => {
+        closeBtn.addEventListener('click', function() {
+          this.closest('.modal').style.display = 'none';
+        });
+      });
+      
+      // Modal close when clicking outside
+      window.addEventListener('click', function(event) {
+        if (event.target.classList.contains('modal')) {
+          event.target.style.display = 'none';
+        }
+      });
+      
+      // File upload
+      document.getElementById("fileUpload").addEventListener('change', handleFileUpload);
+      
+      // Language selector
+      document.getElementById("languageSelector").addEventListener('change', function() {
+        appState.currentLanguage = this.value;
+        localStorage.setItem("chatg_language", this.value);
+      });
+      
+      // Theme toggle
+      document.getElementById("themeToggle").addEventListener('click', toggleDarkMode);
+      document.getElementById("themeSelector").addEventListener('change', function() {
+        setTheme(this.value);
+        if (this.value === 'custom') {
+          document.getElementById("customThemeSection").style.display = 'block';
+        } else {
+          document.getElementById("customThemeSection").style.display = 'none';
+        }
+      });
+      
+      // Accent color
+      document.getElementById("accentColor").addEventListener('input', function() {
+        const color = this.value;
+        appState.customTheme.accentColor = color;
+        document.getElementById("colorPreview").style.backgroundColor = color;
+      });
+      
+      // Color preview click
+      document.getElementById("colorPreview").addEventListener('click', function() {
+        document.getElementById("accentColor").click();
+      });
+      
+      // Theme presets
+      document.querySelectorAll('.theme-preset').forEach(preset => {
+        preset.addEventListener('click', function() {
+          document.querySelectorAll('.theme-preset').forEach(p => p.classList.remove('selected'));
+          this.classList.add('selected');
+          const color = this.dataset.color;
+          document.getElementById("accentColor").value = color;
+          document.getElementById("colorPreview").style.backgroundColor = color;
+          appState.customTheme.accentColor = color;
+        });
+      });
+      
+      // Custom theme image
+      document.getElementById("themeGalleryBtn").addEventListener('click', function() {
+        document.getElementById("customThemeImage").click();
+      });
+      
+      document.getElementById("customThemeImage").addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            appState.customTheme.backgroundImage = event.target.result;
+            const preview = document.getElementById("customThemeImagePreview");
+            preview.src = event.target.result;
+            preview.style.display = "block";
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+      
+      // Text color picker
+      document.getElementById("textColor").addEventListener('input', function() {
+        const color = this.value;
+        appState.customTheme.textColor = color;
+        document.getElementById("textColorPreview").style.backgroundColor = color;
+      });
+      
+      // Text color preview click
+      document.getElementById("textColorPreview").addEventListener('click', function() {
+        document.getElementById("textColor").click();
+      });
+      
+      // Apply custom theme
+      document.getElementById("applyCustomThemeBtn").addEventListener('click', function() {
+        applyCustomTheme();
+      });
+      
+      // Reset custom theme
+      document.getElementById("resetCustomThemeBtn").addEventListener('click', function() {
+        resetCustomTheme();
+      });
+      
+      // Saved chats
+      document.getElementById("savedChatSearch").addEventListener('input', function() {
+        loadSavedChats(this.value);
+      });
+      document.getElementById("clearSavedChatsBtn").addEventListener('click', clearSavedChats);
+      document.getElementById("saveChatBtn").addEventListener('click', saveCurrentChat);
+      
+      // 2FA
+      document.getElementById("toggle2FABtn").addEventListener('click', toggle2FA);
+      document.getElementById("verify2FABtn").addEventListener('click', verify2FACode);
+      
+      // Broadcast
+      document.getElementById("broadcastBtn").addEventListener('click', showBroadcastModal);
+      document.getElementById("sendBroadcastBtn").addEventListener('click', sendBroadcast);
+      
+      // User roles
+      document.getElementById("manageRolesBtn").addEventListener('click', showUserRolesModal);
+      document.getElementById("saveUserRoleBtn").addEventListener('click', saveUserRole);
+      
+      // Saved chat modal
+      document.getElementById("deleteSavedChatBtn").addEventListener('click', deleteSavedChat);
+      document.getElementById("exportSavedChatBtn").addEventListener('click', exportSavedChat);
+      
+      // Persona selector
+      document.getElementById("personaSelector").addEventListener('change', function() {
+        appState.currentPersona = this.value;
+        localStorage.setItem("chatg_persona", this.value);
+      });
+      
+      // Backup and restore
+      document.getElementById("backupBtn").addEventListener('click', backupData);
+      document.getElementById("restoreBtn").addEventListener('click', restoreData);
+      
+      // Error logs
+      document.getElementById("clearErrorLogsBtn").addEventListener('click', clearErrorLogs);
+      
+      // Plugins
+      document.getElementById("addPluginBtn").addEventListener('click', addPlugin);
+      
+      // Close modal buttons
+      document.getElementById("closeAdminModalBtn").addEventListener('click', function() {
+        document.getElementById("adminModal").style.display = 'none';
+      });
+      document.getElementById("closePasswordModalBtn").addEventListener('click', function() {
+        document.getElementById("passwordModal").style.display = 'none';
+      });
+      document.getElementById("cancelBroadcastBtn").addEventListener('click', function() {
+        document.getElementById("broadcastModal").style.display = 'none';
+      });
+      document.getElementById("cancelUserRoleBtn").addEventListener('click', function() {
+        document.getElementById("userRolesModal").style.display = 'none';
+      });
+      document.getElementById("closeSavedChatModalBtn").addEventListener('click', function() {
+        document.getElementById("savedChatModal").style.display = 'none';
+      });
+      document.getElementById("cancel2FABtn").addEventListener('click', function() {
+        document.getElementById("twoFactorModal").style.display = 'none';
+      });
+      
+      // Formatting buttons
+      document.getElementById("boldBtn").addEventListener('click', function() {
+        formatText('bold');
+      });
+      document.getElementById("italicBtn").addEventListener('click', function() {
+        formatText('italic');
+      });
+      document.getElementById("underlineBtn").addEventListener('click', function() {
+        formatText('underline');
+      });
+      document.getElementById("codeBtn").addEventListener('click', function() {
+        formatText('code');
+      });
+      document.getElementById("linkBtn").addEventListener('click', function() {
+        formatText('link');
+      });
+      
+      // Copy password buttons
+      document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('copy-btn') && e.target.dataset.password) {
+          copyToClipboard(e.target.dataset.password);
+          alert('Password copied to clipboard!');
+        }
+      });
+    }
+
+    function applyCustomTheme() {
+      // Save custom theme to localStorage
+      localStorage.setItem("chatg_customTheme", JSON.stringify(appState.customTheme));
+      
+      // Apply accent color
+      if (appState.customTheme.accentColor) {
+        document.documentElement.style.setProperty('--accent-color', appState.customTheme.accentColor);
+      }
+      
+      // Apply background image if exists
+      const overlay = document.getElementById("chatBackgroundOverlay");
+      if (appState.customTheme.backgroundImage) {
+        overlay.style.backgroundImage = `url(${appState.customTheme.backgroundImage})`;
+        overlay.style.display = 'block';
+      } else {
+        overlay.style.backgroundImage = 'none';
+        overlay.style.backgroundColor = appState.customTheme.accentColor || '#4285f4';
+      }
+      
+      // Apply text color
+      if (appState.customTheme.textColor) {
+        document.documentElement.style.setProperty('--text-color', appState.customTheme.textColor);
+        document.querySelectorAll('.chat-message, .chat-header, #chatHistory, #inputArea').forEach(el => {
+          el.style.color = appState.customTheme.textColor;
+        });
+      }
+      
+      alert('Tema kustom berhasil diterapkan!');
+    }
+    
+    function resetCustomTheme() {
+      // Reset to default theme
+      appState.customTheme = {
+        accentColor: '#4285f4',
+        backgroundImage: null,
+        textColor: '#333333'
+      };
+      
+      // Update UI
+      document.getElementById("accentColor").value = '#4285f4';
+      document.getElementById("colorPreview").style.backgroundColor = '#4285f4';
+      document.getElementById("customThemeImagePreview").style.display = 'none';
+      document.getElementById("customThemeImagePreview").src = '';
+      document.getElementById("customThemeImage").value = '';
+      document.getElementById("textColor").value = '#333333';
+      document.getElementById("textColorPreview").style.backgroundColor = '#333333';
+      
+      // Select first color preset
+      document.querySelectorAll('.theme-preset').forEach((preset, index) => {
+        if (index === 0) {
+          preset.classList.add('selected');
+        } else {
+          preset.classList.remove('selected');
+        }
+      });
+      
+      // Remove background image and reset colors
+      const overlay = document.getElementById("chatBackgroundOverlay");
+      overlay.style.backgroundImage = 'none';
+      overlay.style.backgroundColor = '#4285f4';
+      
+      // Reset text color
+      document.documentElement.style.removeProperty('--text-color');
+      document.querySelectorAll('.chat-message, .chat-header, #chatHistory, #inputArea').forEach(el => {
+        el.style.color = '';
+      });
+      
+      // Save to localStorage
+      localStorage.setItem("chatg_customTheme", JSON.stringify(appState.customTheme));
+      
+      alert('Tema kustom telah direset ke default!');
+    }
+
+    function handleLogin() {
+      // Reset error message
+      const loginError = document.getElementById("loginError");
+      loginError.style.display = 'none';
+      loginError.textContent = '';
+
+      const username = document.getElementById("username").value.trim();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
+
+      // Validasi input
+      if (!username || !email || !password) {
+        showLoginError("Semua kolom wajib diisi!");
+        return;
+      }
+
+      if (username.length < 3) {
+        showLoginError("Username harus minimal 3 karakter");
+        return;
+      }
+
+      if (!validateEmail(email)) {
+        showLoginError("Format email tidak valid");
+        return;
+      }
+
+      if (password.length < 6) {
+        showLoginError("Password harus minimal 6 karakter");
+        return;
+      }
+
+      const user = {
+        username,
+        email,
+        password,
+        createdAt: new Date().toISOString()
+      };
+
+      // Coba login
+      try {
+        loginUser(user);
+      } catch (error) {
+        console.error("Login error:", error);
+        showLoginError("Terjadi kesalahan saat login. Silakan coba lagi.");
+      }
+    }
+    
+    function validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+    
+    function showLoginError(message) {
+      const loginError = document.getElementById("loginError");
+      loginError.textContent = message;
+      loginError.style.display = 'block';
+    }
+
+    function loginUser(user) {
+      // Validasi admin
+      if (user.email === ADMIN.email && user.password === ADMIN.password) {
+        user.isAdmin = true;
+        user.role = 'admin';
+      }
+
+      // Check rate limit
+      const rateLimit = appState.backend.checkRateLimit(user.email);
+      if (!rateLimit.allowed) {
+        showLoginError("Terlalu banyak percobaan login. Tunggu beberapa saat.");
+        return;
+      }
+
+      // Simpan ke localStorage
+      localStorage.setItem("chatg_user", JSON.stringify(user));
+      
+      // Update state
+      appState.currentUser = user;
+      appState.isAdmin = user.role === 'admin';
+
+      // Check if 2FA is enabled
+      const backendUser = appState.backend.addUser(user);
+      if (backendUser.twoFactorEnabled && !user.twoFactorVerified) {
+        show2FALogin(backendUser);
+        return;
+      }
+
+      completeLogin(user);
+    }
+
+    function show2FALogin(user) {
+      document.getElementById("loginContainer").style.display = "none";
+      document.getElementById("twoFactorSection").style.display = "block";
+      document.getElementById("twoFactorCode").focus();
+      
+      // Update the login button to verify 2FA code
+      document.getElementById("loginBtn").textContent = "✅ Verifikasi";
+      document.getElementById("loginBtn").onclick = verify2FALogin;
+    }
+
+    function verify2FALogin() {
+      const code = document.getElementById("twoFactorCode").value.trim();
+      if (!code || code.length !== 6) {
+        showLoginError("Masukkan kode 6 digit yang valid");
+        return;
+      }
+
+      const verified = appState.backend.verify2FACode(appState.currentUser.email, code);
+      if (verified) {
+        appState.currentUser.twoFactorVerified = true;
+        completeLogin(appState.currentUser);
+      } else {
+        showLoginError("Kode 2FA tidak valid");
+      }
+    }
+
+    function completeLogin(user) {
+      // Update UI
+      if (appState.isAdmin) {
+        document.getElementById("adminBtn").style.display = "block";
+        document.getElementById("viewPasswordsBtn").style.display = "inline-block";
+      }
+
+      // Pindah ke chat interface
+      showChat(user);
+      
+      // Tampilkan pesan selamat datang
+      document.getElementById("chatHistory").innerHTML = '';
+      addMessage(`💬 Halo, ${user.username}! Saya ChatG. Silakan ajukan pertanyaanmu.`, 'ai');
+      
+      // Load saved chats
+      loadSavedChats();
+      
+      // Update 2FA status
+      update2FAStatus();
+      
+      // Update rate limit display
+      updateRateLimit();
+      
+      // Apply custom theme if selected
+      if (document.getElementById("themeSelector").value === 'custom') {
+        applyCustomTheme();
+      }
+    }
+
+    function googleLogin() {
+      alert("Fitur login Google akan diimplementasikan kemudian.");
+    }
+
+    function logout() {
+      localStorage.removeItem("chatg_user");
+      location.reload();
+    }
+
+    function clearAccount() {
+      if (confirm("Yakin ingin menghapus akun dari perangkat ini?")) {
+        localStorage.removeItem("chatg_user");
+        location.reload();
+      }
+    }
+
+    function showChat(user) {
+      document.getElementById("loginContainer").style.display = "none";
+      document.getElementById("chatContainer").style.display = "block";
+      
+      // Update info pengguna di panel settings
+      document.getElementById("infoUsername").textContent = user.username;
+      document.getElementById("infoEmail").textContent = user.email;
+      document.getElementById("infoPassword").textContent = user.password;
+    }
+
+    function toggleSettings() {
+      const panel = document.getElementById("settingsPanel");
+      panel.style.display = panel.style.display === "none" ? "block" : "none";
+    }
+    
+    function closeSettings() {
+      document.getElementById("settingsPanel").style.display = "none";
+    }
+    
+    function switchSettingsTab(e) {
+      const tabId = e.target.getAttribute("data-tab");
+      
+      // Update active tab
+      document.querySelectorAll(".settings-tab").forEach(tab => {
+        tab.classList.remove("active");
+      });
+      e.target.classList.add("active");
+      
+      // Update active content
+      document.querySelectorAll(".settings-content").forEach(content => {
+        content.classList.remove("active");
+      });
+      document.getElementById(tabId + "Tab").classList.add("active");
+    }
+
+    async function sendMessage() {
+      if (appState.isWaitingForResponse) {
+        alert("Tunggu hingga respons sebelumnya selesai...");
+        return;
+      }
+
+      const inputText = document.getElementById("userInput").value.trim();
+      if (!inputText && !appState.currentAttachment) {
+        alert("Silakan tulis pesan atau lampirkan file terlebih dahulu!");
+        return;
+      }
+
+      // Check rate limit
+      const rateLimit = appState.backend.checkRateLimit(appState.currentUser.email);
+      if (!rateLimit.allowed) {
+        alert("Anda telah mencapai batas permintaan. Tunggu beberapa saat.");
+        return;
+      }
+      updateRateLimit();
+
+      // Add user message to chat
+      let messageContent = inputText;
+      if (appState.currentAttachment) {
+        if (appState.currentAttachment.type.startsWith('image/')) {
+          messageContent += `\n[Gambar terlampir: ${appState.currentAttachment.name}]`;
+        } else {
+          messageContent += `\n[File terlampir: ${appState.currentAttachment.name}]`;
+        }
+      }
+      addMessage(messageContent, 'user');
+      document.getElementById("userInput").value = "";
+      clearAttachment();
+      
+      // Add loading indicator
+      const loadingId = 'loading-' + Date.now();
+      addMessage('<div class="typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div>', 'ai', loadingId);
+      
+      appState.isWaitingForResponse = true;
+      
+      try {
+        // Format input based on persona
+        let formattedInput = inputText;
+        if (appState.currentPersona === 'friend') {
+          formattedInput = `Sebagai teman, jawablah dengan santai: ${inputText}`;
+        } else if (appState.currentPersona === 'expert') {
+          formattedInput = `Sebagai ahli, berikan jawaban teknis yang mendetail: ${inputText}`;
+        } else if (appState.currentPersona === 'creative') {
+          formattedInput = `Gunakan kreativitas Anda dalam menjawab: ${inputText}`;
+        }
+
+        const response = await appState.backend.generateResponse(formattedInput);
+        const text = response.candidates[0].content.parts[0].text;
+        
+        // Format the response to look like ChatGPT
+        const formattedText = formatChatGPTResponse(text);
+        updateMessage(loadingId, formattedText);
+        
+        appState.currentConversation.push({
+          role: "user",
+          parts: [{ text: inputText }]
+        }, {
+          role: "model",
+          parts: [{ text }]
+        });
+        
+      } catch (err) {
+        console.error("Error:", err);
+        updateMessage(loadingId, `<div class="error-message">❌ Gagal mendapatkan jawaban: ${err.message}</div>`);
+      } finally {
+        appState.isWaitingForResponse = false;
+      }
+    }
+
+    function formatChatGPTResponse(text) {
+      // Add random emoji to the beginning of AI messages
+      const greetingEmojis = ["💬", "🎉", "👋", "💡", "🤖", "🌟", "🚀", "🎉"];
+      const randomEmoji = greetingEmojis[Math.floor(Math.random() * greetingEmojis.length)];
+      
+      // Replace markdown-like formatting with HTML
+      let formattedText = text
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // bold
+        .replace(/\*(.*?)\*/g, '<em>$1</em>') // italic
+        .replace(/_(.*?)_/g, '<u>$1</u>') // underline
+        .replace(/~~(.*?)~~/g, '<s>$1</s>') // strikethrough
+        .replace(/`(.*?)`/g, '<code class="inline-code">$1</code>') // inline code
+        .replace(/```([\s\S]*?)```/g, '<pre class="code-block">$1</pre>') // code block
+        .replace(/# (.*?)(\n|$)/g, `<div class="chatgpt-header">${randomEmoji} $1</div>`) // header with emoji
+        .replace(/## (.*?)(\n|$)/g, `<div class="chatgpt-subheader">$1</div>`) // subheader
+        .replace(/---/g, '<div class="chatgpt-divider"></div>') // divider
+        .replace(/\n/g, '<br>') // new lines
+        .replace(/\*\s(.*?)(<br>|$)/g, '<div class="chatgpt-list-item">$1</div>') // convert * to bullet points
+        .replace(/-\s(.*?)(<br>|$)/g, '<div class="chatgpt-list-item">$1</div>'); // convert - to bullet points
+
+      return formattedText;
+    }
+
+    function addMessage(text, type, id = '') {
+      const messageElement = document.createElement("div");
+      messageElement.className = `chat-message ${type}-message`;
+      if (id) messageElement.id = id;
+
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      // Add emoji to AI messages
+      const emojis = {
+        greeting: ["👋", "🎉", "🤖"],
+        question: ["❓", "🤔", "🔍"],
+        info: ["ℹ️", "📝", "💡"],
+        error: ["❌", "🚫", "🚨"]
+      };
+
+      let displayText = text;
+      if (type === 'ai') {
+        // Add random emoji based on message content
+        let emojiCategory = 'greeting';
+        if (text.includes('?')) emojiCategory = 'question';
+        if (text.includes('error') || text.includes('gagal')) emojiCategory = 'error';
+        if (text.includes('info') || text.includes('penjelasan')) emojiCategory = 'info';
+
+        const randomEmoji = emojis[emojiCategory][Math.floor(Math.random() * emojis[emojiCategory].length)];
+        displayText = `${randomEmoji} ${text}`;
+      }
+
+      messageElement.innerHTML = `
+        <div class="message-text">${type === 'ai' ? formatChatGPTResponse(displayText) : text}</div>
+        <div class="timestamp">${time}</div>
+      `;
+      
+      document.getElementById("chatHistory").appendChild(messageElement);
+      document.getElementById("chatHistory").scrollTop = document.getElementById("chatHistory").scrollHeight;
+    }
+
+    function updateMessage(id, newText) {
+      const messageElement = document.getElementById(id);
+      if (messageElement) {
+        const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        messageElement.innerHTML = `
+          <div class="message-text">${newText}</div>
+          <div class="timestamp">${time}</div>
+        `;
+        
+        document.getElementById("chatHistory").scrollTop = document.getElementById("chatHistory").scrollHeight;
+      }
+    }
+
+    function saveEditorFile() {
+      const content = document.getElementById("codeEditor").value;
+      if (!content.trim()) {
+        alert("Editor kosong! Silakan tulis kode terlebih dahulu.");
+        return;
+      }
+
+      const ext = document.getElementById("fileType").value;
+      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `kode-${new Date().toISOString().slice(0,10)}.${ext}`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function executeAdminCode() {
+      const code = document.getElementById("adminCodeEditor").value;
+      try {
+        new Function(code)();
+        alert("Kode berhasil dijalankan!");
+      } catch (e) {
+        alert(`Error executing code: ${e.message}`);
+        console.error(e);
+      }
+    }
+
+    function saveAdminCode() {
+      const code = document.getElementById("adminCodeEditor").value;
+      const result = appState.backend.saveCode(code);
+      alert(result);
+    }
+
+    function loadAdminFile() {
+      const fileType = document.getElementById("adminFileType").value;
+      const content = appState.backend.getFile(fileType);
+      document.getElementById("adminFileEditor").value = content;
+    }
+
+    function saveAdminFile() {
+      const fileType = document.getElementById("adminFileType").value;
+      const content = document.getElementById("adminFileEditor").value;
+      const result = appState.backend.saveFile(fileType, content);
+      alert(result);
+    }
+
+    function refreshUsersList(searchTerm = '') {
+      const users = appState.backend.getUsers(searchTerm);
+      const userList = document.getElementById("userList");
+      userList.innerHTML = '';
+      
+      users.forEach(user => {
+        const userItem = document.createElement('div');
+        userItem.className = 'user-item';
+        
+        const userDetails = document.createElement('div');
+        userDetails.className = 'user-details';
+        userDetails.innerHTML = `
+          <strong>${user.username}</strong> (${user.email})
+          <div class="user-stats">
+            Terakhir login: ${new Date(user.lastLogin).toLocaleString()} | 
+            Login count: ${user.loginCount}
+          </div>
+        `;
+        
+        const userActions = document.createElement('div');
+        userActions.className = 'user-actions';
+        
+        if (appState.currentUser.role === 'admin') {
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'danger small';
+          deleteBtn.textContent = 'Hapus';
+          deleteBtn.onclick = () => deleteUser(user.email);
+          userActions.appendChild(deleteBtn);
+        }
+        
+        userItem.appendChild(userDetails);
+        userItem.appendChild(userActions);
+        userList.appendChild(userItem);
+      });
+      
+      document.getElementById("userCount").textContent = users.length;
+    }
+
+    function deleteUser(email) {
+      if (confirm(`Yakin ingin menghapus user ${email}?`)) {
+        const success = appState.backend.deleteUser(email);
+        if (success) {
+          alert('User berhasil dihapus');
+          refreshUsersList();
+        } else {
+          alert('Gagal menghapus user');
+        }
+      }
+    }
+
+    function exportUserData() {
+      const data = appState.backend.exportUserData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `chatg-users-${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function showUserPasswords() {
+      const passwords = appState.backend.getAllUserPasswords();
+      const tbody = document.getElementById("userPasswordsBody");
+      tbody.innerHTML = '';
+      
+      passwords.forEach(user => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${user.username}</td>
+          <td>${user.email}</td>
+          <td class="password-text">${user.password}</td>
+          <td><span class="role-badge ${user.role}">${user.role}</span></td>
+          <td><button class="copy-btn" data-password="${user.password}">Salin</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      
+      document.getElementById("passwordModal").style.display = 'block';
+    }
+
+    function loadLoginHistory() {
+      const history = appState.backend.loginHistory;
+      const list = document.getElementById("loginHistoryList");
+      list.innerHTML = '';
+      
+      history.slice(0, 20).forEach(entry => {
+        const item = document.createElement('div');
+        item.className = 'user-item';
+        item.innerHTML = `
+          <strong>${entry.email}</strong> - ${entry.action}
+          <div class="user-stats">
+            ${new Date(entry.timestamp).toLocaleString()}
+            ${entry.message ? `| Pesan: ${entry.message}` : ''}
+          </div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function clearLoginHistory() {
+      if (confirm('Yakin ingin menghapus semua riwayat login?')) {
+        appState.backend.loginHistory = [];
+        loadLoginHistory();
+      }
+    }
+
+    function loadSavedChats(searchTerm = '') {
+      if (!appState.currentUser) return;
+      
+      const chats = appState.backend.getSavedChats(appState.currentUser.email, searchTerm);
+      const list = document.getElementById("savedChatsList");
+      list.innerHTML = '';
+      
+      if (chats.length === 0) {
+        list.innerHTML = '<div class="saved-chat-item">Tidak ada percakapan tersimpan</div>';
+        return;
+      }
+      
+      chats.forEach(chat => {
+        const item = document.createElement('div');
+        item.className = 'saved-chat-item';
+        item.dataset.id = chat.id;
+        item.innerHTML = `
+          <div class="saved-chat-title">${chat.title || 'Percakapan tanpa judul'}</div>
+          <div class="saved-chat-preview">${chat.content.substring(0, 50)}...</div>
+          <div class="user-stats">
+            ${new Date(chat.createdAt).toLocaleString()}
+          </div>
+        `;
+        item.addEventListener('click', () => openSavedChat(chat));
+        list.appendChild(item);
+      });
+    }
+
+    function openSavedChat(chat) {
+      appState.selectedChat = chat;
+      document.getElementById("savedChatContent").innerHTML = chat.content;
+      document.getElementById("savedChatModal").style.display = 'block';
+    }
+
+    function deleteSavedChat() {
+      if (!appState.selectedChat) return;
+      
+      if (confirm('Yakin ingin menghapus percakapan ini?')) {
+        const success = appState.backend.deleteSavedChat(appState.selectedChat.id);
+        if (success) {
+          alert('Percakapan berhasil dihapus');
+          loadSavedChats();
+          document.getElementById("savedChatModal").style.display = 'none';
+        } else {
+          alert('Gagal menghapus percakapan');
+        }
+      }
+    }
+
+    function exportSavedChat() {
+      if (!appState.selectedChat) return;
+      
+      const blob = new Blob([appState.selectedChat.content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `chatg-chat-${appState.selectedChat.id}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function clearSavedChats() {
+      if (confirm('Yakin ingin menghapus semua percakapan tersimpan?')) {
+        appState.backend.clearSavedChats(appState.currentUser.email);
+        loadSavedChats();
+      }
+    }
+
+    function saveCurrentChat() {
+      if (!appState.currentUser) return;
+      
+      const title = prompt('Masukkan judul untuk percakapan ini:');
+      if (!title) return;
+      
+      const content = document.getElementById("chatHistory").innerHTML;
+      const chat = appState.backend.saveChat(appState.currentUser.email, title, content);
+      
+      alert('Percakapan berhasil disimpan!');
+      loadSavedChats();
+    }
+
+    function update2FAStatus() {
+      const status = document.getElementById("twoFactorStatus");
+      const btn = document.getElementById("toggle2FABtn");
+      
+      if (appState.currentUser.twoFactorEnabled) {
+        status.innerHTML = '2FA saat ini <strong>diaktifkan</strong>';
+        btn.textContent = 'Nonaktifkan 2FA';
+      } else {
+        status.innerHTML = '2FA saat ini <strong>dinonaktifkan</strong>';
+        btn.textContent = 'Aktifkan 2FA';
+      }
+    }
+
+    function toggle2FA() {
+      if (!appState.currentUser) return;
+      
+      if (appState.currentUser.twoFactorEnabled) {
+        // Disable 2FA
+        const success = appState.backend.toggle2FA(appState.currentUser.email, false);
+        if (success) {
+          appState.currentUser.twoFactorEnabled = false;
+          update2FAStatus();
+        }
+      } else {
+        // Show 2FA setup modal
+        show2FASetup();
+      }
+    }
+
+    function show2FASetup() {
+      const qrData = appState.backend.get2FAQRCode(appState.currentUser.email);
+      if (!qrData) {
+        alert('Gagal memuat data 2FA');
+        return;
+      }
+      
+      document.getElementById("twoFactorManualCode").textContent = qrData.secret;
+      document.getElementById("twoFactorQRContent").innerHTML = `
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrData.otpauthUrl)}" alt="QR Code">
+      `;
+      
+      document.getElementById("twoFactorModal").style.display = 'block';
+    }
+
+    function verify2FACode() {
+      const code = document.getElementById("twoFactorVerifyCode").value.trim();
+      if (!code || code.length !== 6) {
+        alert('Masukkan kode 6 digit yang valid');
+        return;
+      }
+      
+      const verified = appState.backend.verify2FACode(appState.currentUser.email, code);
+      if (verified) {
+        const success = appState.backend.toggle2FA(appState.currentUser.email, true);
+        if (success) {
+          appState.currentUser.twoFactorEnabled = true;
+          update2FAStatus();
+          document.getElementById("twoFactorModal").style.display = 'none';
+          alert('2FA berhasil diaktifkan!');
+        }
+      } else {
+        alert('Kode verifikasi tidak valid');
+      }
+    }
+
+    function showBroadcastModal() {
+      document.getElementById("broadcastModal").style.display = 'block';
+    }
+
+    function sendBroadcast() {
+      const message = document.getElementById("broadcastMessage").value.trim();
+      if (!message) {
+        alert('Masukkan pesan broadcast terlebih dahulu');
+        return;
+      }
+      
+      const success = appState.backend.broadcastMessage(message);
+      if (success) {
+        alert('Broadcast berhasil dikirim!');
+        document.getElementById("broadcastModal").style.display = 'none';
+      } else {
+        alert('Gagal mengirim broadcast');
+      }
+    }
+
+    function showUserRolesModal() {
+      const users = appState.backend.getUsers();
+      const list = document.getElementById("roleUserList");
+      list.innerHTML = '';
+      
+      users.forEach(user => {
+        const item = document.createElement('div');
+        item.className = 'user-item';
+        item.innerHTML = `
+          <strong>${user.username}</strong> (${user.email})
+          <div class="user-stats">
+            Role saat ini: <span class="role-badge ${user.role}">${user.role}</span>
+          </div>
+        `;
+        item.addEventListener('click', () => {
+          appState.selectedUserForRole = user;
+          document.getElementById("roleSelector").value = user.role;
+        });
+        list.appendChild(item);
+      });
+      
+      document.getElementById("userRolesModal").style.display = 'block';
+    }
+
+    function saveUserRole() {
+      if (!appState.selectedUserForRole) {
+        alert('Pilih pengguna terlebih dahulu');
+        return;
+      }
+      
+      const newRole = document.getElementById("roleSelector").value;
+      const success = appState.backend.updateUserRole(appState.selectedUserForRole.email, newRole);
+      
+      if (success) {
+        alert('Role berhasil diperbarui!');
+        showUserRolesModal(); // Refresh the list
+      } else {
+        alert('Gagal memperbarui role');
+      }
+    }
+
+    function backupData() {
+      const data = appState.backend.backupData();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `chatg-backup-${new Date().toISOString().slice(0,10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      document.getElementById("backupStatus").textContent = 'Backup berhasil dibuat!';
+      setTimeout(() => {
+        document.getElementById("backupStatus").textContent = '';
+      }, 3000);
+    }
+
+    function restoreData() {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json';
+      
+      input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = event => {
+          try {
+            const data = JSON.parse(event.target.result);
+            const success = appState.backend.restoreData(data);
+            
+            if (success) {
+              alert('Data berhasil direstore!');
+              document.getElementById("backupStatus").textContent = 'Restore berhasil!';
+              setTimeout(() => {
+                document.getElementById("backupStatus").textContent = '';
+              }, 3000);
+            } else {
+              alert('Gagal melakukan restore data');
+            }
+          } catch (err) {
+            alert('File backup tidak valid');
+            console.error(err);
+          }
+        };
+        
+        reader.readAsText(file);
+      };
+      
+      input.click();
+    }
+
+    function clearErrorLogs() {
+      if (confirm('Yakin ingin menghapus semua log error?')) {
+        appState.backend.clearErrorLogs();
+        loadErrorLogs();
+      }
+    }
+
+    function loadErrorLogs() {
+      const logs = appState.backend.getErrorLogs();
+      document.getElementById("errorLogs").textContent = logs.map(log => 
+        `[${new Date(log.timestamp).toLocaleString()}] ${log.message}\n${log.stack || ''}`
+      ).join('\n\n');
+    }
+
+    function addPlugin() {
+      alert('Fitur plugin akan diimplementasikan kemudian');
+    }
+
+    function setTheme(theme) {
+      if (theme === 'system') {
+        theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      
+      appState.darkMode = theme === 'dark';
+      document.body.classList.toggle('dark-mode', appState.darkMode);
+      localStorage.setItem("chatg_theme", theme);
+      
+      document.getElementById("themeToggle").textContent = appState.darkMode ? '☀️ Mode Terang' : '🌙 Mode Gelap';
+      
+      // Show/hide custom theme section
+      if (theme === 'custom') {
+        document.getElementById("customThemeSection").style.display = 'block';
+      } else {
+        document.getElementById("customThemeSection").style.display = 'none';
+      }
+    }
+
+    function toggleDarkMode() {
+      const newTheme = appState.darkMode ? 'light' : 'dark';
+      setTheme(newTheme);
+      document.getElementById("themeSelector").value = newTheme;
+    }
+
+    function updateAnalytics() {
+      document.getElementById("totalConversations").textContent = appState.backend.analytics.totalConversations;
+      document.getElementById("activeUsers").textContent = appState.backend.analytics.activeUsers;
+      document.getElementById("totalUsers").textContent = appState.backend.analytics.totalUsers || appState.backend.users.length;
+      document.getElementById("requestsToday").textContent = appState.backend.analytics.requestsToday;
+      
+      // Update chart
+      const chart = document.getElementById("usageChart");
+      chart.innerHTML = '';
+      
+      const days = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+      const maxUsage = Math.max(...appState.backend.analytics.weeklyUsage);
+      
+      appState.backend.analytics.weeklyUsage.forEach((value, index) => {
+        const bar = document.createElement('div');
+        bar.className = 'chart-bar';
+        bar.style.height = `${(value / maxUsage) * 100}%`;
+        
+        const label = document.createElement('div');
+        label.className = 'chart-bar-label';
+        label.textContent = days[index];
+        
+        bar.appendChild(label);
+        chart.appendChild(bar);
+      });
+    }
+
+    function updateRateLimit() {
+      const limit = appState.backend.checkRateLimit(appState.currentUser.email);
+      document.getElementById("requestCount").textContent = limit.remaining;
+      document.getElementById("requestLimit").textContent = 10; // Hardcoded for now
+    }
+
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      appState.currentAttachment = file;
+      
+      const preview = document.getElementById("attachmentPreview");
+      preview.innerHTML = '';
+      
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.maxWidth = '100px';
+          img.style.maxHeight = '100px';
+          
+          const removeBtn = document.createElement('button');
+          removeBtn.textContent = '❌ Hapus';
+          removeBtn.className = 'danger small';
+          removeBtn.onclick = clearAttachment;
+          
+          preview.appendChild(img);
+          preview.appendChild(removeBtn);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        const fileInfo = document.createElement('div');
+        fileInfo.textContent = `File: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = '❌ Hapus';
+        removeBtn.className = 'danger small';
+        removeBtn.onclick = clearAttachment;
+        
+        preview.appendChild(fileInfo);
+        preview.appendChild(removeBtn);
+      }
+    }
+
+    function clearAttachment() {
+      appState.currentAttachment = null;
+      document.getElementById("fileUpload").value = '';
+      document.getElementById("attachmentPreview").innerHTML = '';
+    }
+
+    function formatText(type) {
+      const textarea = document.getElementById("userInput");
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selectedText = textarea.value.substring(start, end);
+      let before = textarea.value.substring(0, start);
+      let after = textarea.value.substring(end);
+      
+      let formattedText = '';
+      let newCursorPos = start;
+      
+      switch (type) {
+        case 'bold':
+          formattedText = `**${selectedText}**`;
+          newCursorPos = start + 2;
+          break;
+        case 'italic':
+          formattedText = `*${selectedText}*`;
+          newCursorPos = start + 1;
+          break;
+        case 'underline':
+          formattedText = `_${selectedText}_`;
+          newCursorPos = start + 1;
+          break;
+        case 'code':
+          if (selectedText.includes('\n')) {
+            formattedText = `\`\`\`\n${selectedText}\n\`\`\``;
+            newCursorPos = start + 4;
+          } else {
+            formattedText = `\`${selectedText}\``;
+            newCursorPos = start + 1;
+          }
+          break;
+        case 'link':
+          formattedText = `[${selectedText}](url)`;
+          newCursorPos = start + selectedText.length + 3;
+          break;
+        default:
+          return;
+      }
+      
+      textarea.value = before + formattedText + after;
+      textarea.focus();
+      textarea.setSelectionRange(newCursorPos, newCursorPos + selectedText.length);
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        console.log('Text copied to clipboard');
+      }).catch(err => {
+        console.error('Failed to copy text: ', err);
+      });
+    }
+  </script>
+</body>
+</html>
