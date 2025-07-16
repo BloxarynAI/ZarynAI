@@ -264,7 +264,7 @@
 
 .password-table thead tr {
   background-color: #4285f4;
-  color: #ffffff;
+  color: #34a85300;
   text-align: left;
 }
 
@@ -1023,9 +1023,13 @@
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      opacity: 0.1;
+      opacity: 0.7;
     }
-    
+
+    .dark-mode .chat-background-overlay {
+      opacity: 0.5;
+    }
+
     /* Ensure chat content is above the background */
     .chat-container > *:not(.chat-background-overlay) {
       position: relative;
@@ -1152,15 +1156,7 @@
           <button id="linkBtn" title="Link" class="secondary">🔗</button>
           <label for="fileUpload" class="file-upload-label secondary">📎 Lampirkan</label>
           <input type="file" id="fileUpload" accept="image/*,.pdf,.doc,.docx,.txt">
-          <select id="languageSelector" class="language-selector">
-            <option value="id">🇮🇩 Indonesia</option>
-            <option value="en">🇺🇸 English</option>
-            <option value="es">🇪🇸 Español</option>
-            <option value="fr">🇫🇷 Français</option>
-            <option value="ko">🇰🇷 한국어</option>
-            <option value="ja">🇯🇵 日本語</option>
-          </select>
-          <button id="themeToggle" class="theme-selector secondary">🌙 Mode Gelap</button>
+          <button id="themeToggle" class="theme-selector secondary">🌙 Mode Gelap</button>          
         </div>
         <div id="attachmentPreview"></div>
         <textarea id="userInput" rows="3" placeholder="💬 Tulis pertanyaan di sini... (Shift+Enter untuk baris baru)"></textarea>
@@ -1193,7 +1189,7 @@
         <!-- Tombol Admin yang akan muncul hanya untuk admin -->
         <button id="adminBtn" class="clickable-button" style="display:none; margin-bottom:15px;">👑 Panel Admin</button>
         <!-- Tambahkan setelah tombol adminBtn -->
-        <button id="adminProfileBtn" class="clickable-button admin-profile" style="margin-bottom:15px;">👑 Admin Profile</button>
+        <button id="adminProfileBtn" class="clickable-button" style="margin-bottom:15px;">👑 Admin Profile</button>
         
         <div id="twoFactorSettings">
           <h4>🔍 Two-Factor Authentication</h4>
@@ -1230,7 +1226,18 @@
             <option value="creative">Kreatif</option>
           </select>
         </div>
-        <div>
+<div>
+ <h4>🌐 Bahasa</h4>
+ <select id="languageSelector" class="secondary">
+  <div class="language-selector">
+    <option value="id" selected>🇮🇩 Indonesia</option>
+    <option value="en">🇺🇸 English</option>
+    <option value="es">🇪🇸 Español</option>
+    <option value="fr">🇫🇷 Français</option>
+    <option value="ko">🇰🇷 한국어</option>
+    <option value="ja">🇯🇵 日本語</option>
+  </select>
+</div>
           <h4>🎨 Tema</h4>
           <select id="themeSelector" class="secondary">
             <option value="light">Terang</option>
@@ -1239,7 +1246,7 @@
             <option value="custom">Kustom</option>
           </select>
         </div>
-        <div id="customThemeSection" style="display: none;">
+        <div id="customThemeSection" style="display:         none;">
          <h4>🎨 Tampilan Kustom</h4>
           <div class="custom-theme-options">
             <div class="color-picker-container">
@@ -1508,6 +1515,607 @@
     // Ganti dengan API key Anda
     const API_KEY = "AIzaSyDgeyOQEHy5X02jlUKOjmMnzNuRjC93oJ4";
     const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+  
+  // Language translations
+  const translations = {
+    id: {
+      loginTitle: "💬 Login ke ChatG",
+      usernamePlaceholder: "👤 Nama Pengguna (min 3 karakter)",
+      emailPlaceholder: "📧 Email (contoh: user@example.com)",
+      passwordPlaceholder: "🔑 Kata Sandi (min 6 karakter)",
+      twoFactorPlaceholder: "🔍 Kode 2FA (6 digit)",
+      loginButton: "💬 Login",
+      googleLoginButton: "🌐 Login dengan Google",
+      chatTitle: "💬 ChatG",
+      inputPlaceholder: "💬 Tulis pertanyaan di sini... (Shift+Enter untuk baris baru)",
+      sendButton: "💬 Kirim",
+      saveChatButton: "💾 Simpan Chat",
+      settingsButton: "⚙️ Pengaturan",
+      limitText: "10",
+      rateLimitText: "Permintaan: {count}/{limit} per menit",
+      accountTab: "Akun",
+      savedTab: "Percakapan",
+      appearanceTab: "Tampilan",
+      accountSettingsTitle: "⚙️ Pengaturan Akun",
+      usernameLabel: "👤 Nama Pengguna:",
+      emailLabel: "📧 Email:",
+      passwordLabel: "🔑 Password:",
+      adminButton: "👑 Panel Admin",
+      adminProfileButton: "👑 Profil Admin",
+      twoFactorTitle: "🔍 Two-Factor Authentication",
+      enabled: "diaktifkan",
+      disabled: "dinonaktifkan",
+      twoFactorStatus: "2FA saat ini {status}",
+      enable2FAButton: "Aktifkan 2FA",
+      disable2FAButton: "Nonaktifkan 2FA",
+      logoutButton: "👋 Logout",
+      clearAccountButton: "🗑️ Hapus Akun",
+      closeSettingsButton: "❌ Tutup",
+      savedChatsTitle: "💾 Percakapan Tersimpan",
+      searchChatPlaceholder: "🔍 Cari percakapan...",
+      clearChatsButton: "🗑️ Hapus Semua",
+      appearanceTitle: "🎨 Pengaturan Tampilan",
+      personaLabel: "👤 Persona AI",
+      languageLabel: "🌐 Bahasa",
+      themeLabel: "🎨 Tema",
+      lightTheme: "Terang",
+      darkTheme: "Gelap",
+      systemTheme: "Sistem",
+      customTheme: "Kustom",
+      customThemeTitle: "🎨 Tampilan Kustom",
+      accentColorLabel: "Warna Aksen:",
+      backgroundLabel: "Latar Belakang Kustom:",
+      textColorLabel: "Warna Teks:",
+      applyThemeButton: "💾 Terapkan Tema",
+      resetThemeButton: "🔄 Reset",
+      themeGalleryText: "Pilih dari Galeri",
+      welcomeMessage: "💬 Halo, {username}! Saya ChatG. Silakan ajukan pertanyaanmu.",
+      noSavedChats: "Tidak ada percakapan tersimpan",
+      chatUntitled: "Percakapan tanpa judul",
+      deleteConfirm: "Yakin ingin menghapus?",
+      deleteSuccess: "Berhasil dihapus",
+      deleteFail: "Gagal menghapus",
+      saveSuccess: "Berhasil disimpan!",
+      saveFail: "Gagal menyimpan",
+      requiredFields: "Semua kolom wajib diisi!",
+      usernameLength: "Username harus minimal 3 karakter",
+      emailInvalid: "Format email tidak valid",
+      passwordLength: "Password harus minimal 6 karakter",
+      rateLimitExceeded: "Terlalu banyak percobaan login. Tunggu beberapa saat.",
+      codeRequired: "Masukkan kode 6 digit yang valid",
+      invalidCode: "Kode verifikasi tidak valid",
+      twoFASuccess: "2FA berhasil diaktifkan!",
+      broadcastTitle: "📢 Broadcast Pesan",
+      broadcastPlaceholder: "📝 Tulis pesan yang akan dikirim ke semua pengguna...",
+      sendBroadcastButton: "💬 Kirim Broadcast",
+      cancelButton: "❌ Batal",
+      manageRolesTitle: "⚙️ Kelola Peran Pengguna",
+      saveRoleButton: "💾 Simpan Peran",
+      currentRole: "Role saat ini:",
+      userRole: "User",
+      moderatorRole: "Moderator",
+      adminRole: "Admin",
+      backupTitle: "💾 Backup & Restore",
+      backupButton: "💾 Backup Data",
+      restoreButton: "🔄 Restore Data",
+      backupSuccess: "Backup berhasil dibuat!",
+      restoreSuccess: "Restore berhasil!",
+      errorLogsTitle: "⚠️ Error Logs",
+      clearLogsButton: "🗑️ Bersihkan Log",
+      pluginsTitle: "🔌 Plugin System",
+      addPluginButton: "➕ Tambah Plugin",
+      closeAdminButton: "❌ Tutup Panel Admin",
+      passwordsTitle: "🔑 Data Password Pengguna",
+      copyButton: "Salin",
+      closeModalButton: "❌ Tutup",
+      fileUploadLabel: "📎 Lampirkan",
+      darkModeToggle: "🌙 Mode Gelap",
+      lightModeToggle: "☀️ Mode Terang",
+      boldButton: "B",
+      italicButton: "I",
+      underlineButton: "U",
+      codeButton: "{ }",
+      linkButton: "🔗",
+      creatorInfo: "🤖 ChatG dibuat oleh Bloxaryn sebagai developer utama. Dibantu oleh: Kimi AI, DeepSeek, dan ChatGPT."
+    },
+    en: {
+      loginTitle: "💬 Login to ChatG",
+      usernamePlaceholder: "👤 Username (min 3 characters)",
+      emailPlaceholder: "📧 Email (e.g., user@example.com)",
+      passwordPlaceholder: "🔑 Password (min 6 characters)",
+      twoFactorPlaceholder: "🔍 2FA Code (6 digits)",
+      loginButton: "💬 Login",
+      googleLoginButton: "🌐 Login with Google",
+      chatTitle: "💬 ChatG",
+      inputPlaceholder: "💬 Type your question here... (Shift+Enter for new line)",
+      sendButton: "💬 Send",
+      saveChatButton: "💾 Save Chat",
+      settingsButton: "⚙️ Settings",
+      rateLimitText: "Requests: {count}/{limit} per minute",
+      accountTab: "Account",
+      savedTab: "Conversations",
+      appearanceTab: "Appearance",
+      accountSettingsTitle: "⚙️ Account Settings",
+      usernameLabel: "👤 Username:",
+      emailLabel: "📧 Email:",
+      passwordLabel: "🔑 Password:",
+      adminButton: "👑 Admin Panel",
+      adminProfileButton: "👑 Admin Profile",
+      twoFactorTitle: "🔍 Two-Factor Authentication",
+      enabled: "enabled",
+      disabled: "disabled", 
+      twoFactorStatus: "2FA saat ini {status}",
+      enable2FAButton: "Enable 2FA",
+      disable2FAButton: "Disable 2FA",
+      logoutButton: "👋 Logout",
+      clearAccountButton: "🗑️ Delete Account",
+      closeSettingsButton: "❌ Close",
+      savedChatsTitle: "💾 Saved Conversations",
+      searchChatPlaceholder: "🔍 Search conversations...",
+      clearChatsButton: "🗑️ Clear All",
+      appearanceTitle: "🎨 Appearance Settings",
+      personaLabel: "👤 AI Persona",
+      languageLabel: "🌐 Language",
+      themeLabel: "🎨 Theme",
+      lightTheme: "Light",
+      darkTheme: "Dark",
+      systemTheme: "System",
+      customTheme: "Custom",
+      customThemeTitle: "🎨 Custom Appearance",
+      accentColorLabel: "Accent Color:",
+      backgroundLabel: "Custom Background:",
+      textColorLabel: "Text Color:",
+      applyThemeButton: "💾 Apply Theme",
+      resetThemeButton: "🔄 Reset",
+      themeGalleryText: "Choose from Gallery",
+      welcomeMessage: "💬 Hello, {username}! I'm ChatG. Please ask me anything.",
+      noSavedChats: "No saved conversations",
+      chatUntitled: "Untitled conversation",
+      deleteConfirm: "Are you sure you want to delete?",
+      deleteSuccess: "Successfully deleted",
+      deleteFail: "Failed to delete",
+      saveSuccess: "Successfully saved!",
+      saveFail: "Failed to save",
+      requiredFields: "All fields are required!",
+      usernameLength: "Username must be at least 3 characters",
+      emailInvalid: "Invalid email format",
+      passwordLength: "Password must be at least 6 characters",
+      rateLimitExceeded: "Too many login attempts. Please wait.",
+      codeRequired: "Please enter a valid 6-digit code",
+      invalidCode: "Invalid verification code",
+      twoFASuccess: "2FA successfully enabled!",
+      broadcastTitle: "📢 Broadcast Message",
+      broadcastPlaceholder: "📝 Type message to send to all users...",
+      sendBroadcastButton: "💬 Send Broadcast",
+      cancelButton: "❌ Cancel",
+      manageRolesTitle: "⚙️ Manage User Roles",
+      saveRoleButton: "💾 Save Role",
+      currentRole: "Current role:",
+      userRole: "User",
+      moderatorRole: "Moderator",
+      adminRole: "Admin",
+      backupTitle: "💾 Backup & Restore",
+      backupButton: "💾 Backup Data",
+      restoreButton: "🔄 Restore Data",
+      backupSuccess: "Backup created successfully!",
+      restoreSuccess: "Restore completed successfully!",
+      errorLogsTitle: "⚠️ Error Logs",
+      clearLogsButton: "🗑️ Clear Logs",
+      pluginsTitle: "🔌 Plugin System",
+      addPluginButton: "➕ Add Plugin",
+      closeAdminButton: "❌ Close Admin Panel",
+      passwordsTitle: "🔑 User Passwords Data",
+      copyButton: "Copy",
+      closeModalButton: "❌ Close",
+      fileUploadLabel: "📎 Attach",
+      darkModeToggle: "🌙 Dark Mode",
+      lightModeToggle: "☀️ Light Mode",
+      boldButton: "B",
+      italicButton: "I",
+      underlineButton: "U",
+      codeButton: "{ }",
+      linkButton: "🔗",
+      creatorInfo: "🤖 ChatG was created by Bloxaryn as the main developer. Assisted by: Kimi AI, DeepSeek, and ChatGPT."
+    },
+    es: {
+      loginTitle: "💬 Iniciar sesión en ChatG",
+      usernamePlaceholder: "👤 Nombre de usuario (mín 3 caracteres)",
+      emailPlaceholder: "📧 Correo electrónico (ej. usuario@ejemplo.com)",
+      passwordPlaceholder: "🔑 Contraseña (mín 6 caracteres)",
+      twoFactorPlaceholder: "🔍 Código 2FA (6 dígitos)",
+      loginButton: "💬 Iniciar sesión",
+      googleLoginButton: "🌐 Iniciar con Google",
+      chatTitle: "💬 ChatG",
+      inputPlaceholder: "💬 Escribe tu pregunta aquí... (Shift+Enter para nueva línea)",
+      sendButton: "💬 Enviar",
+      saveChatButton: "💾 Guardar chat",
+      settingsButton: "⚙️ Configuración",
+      rateLimitText: "Solicitudes: {count}/{limit} por minuto",
+      accountTab: "Cuenta",
+      savedTab: "Conversaciones",
+      appearanceTab: "Apariencia",
+      accountSettingsTitle: "⚙️ Configuración de cuenta",
+      usernameLabel: "👤 Nombre de usuario:",
+      emailLabel: "📧 Correo electrónico:",
+      passwordLabel: "🔑 Contraseña:",
+      adminButton: "👑 Panel de administrador",
+      adminProfileButton: "👑 Perfil de administrador",
+      twoFactorTitle: "🔍 Autenticación de dos factores",
+      enabled: "activar",
+      disabled: "desactivar",
+      twoFactorStatus: "2FA está actualmente {status}",
+      enable2FAButton: "Activar 2FA",
+      disable2FAButton: "Desactivar 2FA",
+      logoutButton: "👋 Cerrar sesión",
+      clearAccountButton: "🗑️ Eliminar cuenta",
+      closeSettingsButton: "❌ Cerrar",
+      savedChatsTitle: "💾 Conversaciones guardadas",
+      searchChatPlaceholder: "🔍 Buscar conversaciones...",
+      clearChatsButton: "🗑️ Limpiar todo",
+      appearanceTitle: "🎨 Configuración de apariencia",
+      personaLabel: "👤 Persona de IA",
+      languageLabel: "🌐 Idioma",
+      themeLabel: "🎨 Tema",
+      lightTheme: "Claro",
+      darkTheme: "Oscuro",
+      systemTheme: "Sistema",
+      customTheme: "Personalizado",
+      customThemeTitle: "🎨 Apariencia personalizada",
+      accentColorLabel: "Color de acento:",
+      backgroundLabel: "Fondo personalizado:",
+      textColorLabel: "Color de texto:",
+      applyThemeButton: "💾 Aplicar tema",
+      resetThemeButton: "🔄 Restablecer",
+      themeGalleryText: "Elegir de la galería",
+      welcomeMessage: "💬 ¡Hola, {username}! Soy ChatG. Por favor pregúntame lo que quieras.",
+      noSavedChats: "No hay conversaciones guardadas",
+      chatUntitled: "Conversación sin título",
+      deleteConfirm: "¿Estás seguro de que quieres eliminar?",
+      deleteSuccess: "Eliminado con éxito",
+      deleteFail: "Error al eliminar",
+      saveSuccess: "¡Guardado con éxito!",
+      saveFail: "Error al guardar",
+      requiredFields: "¡Todos los campos son obligatorios!",
+      usernameLength: "El nombre de usuario debe tener al menos 3 caracteres",
+      emailInvalid: "Formato de correo electrónico inválido",
+      passwordLength: "La contraseña debe tener al menos 6 caracteres",
+      rateLimitExceeded: "Demasiados intentos de inicio de sesión. Por favor espera.",
+      codeRequired: "Por favor ingresa un código válido de 6 dígitos",
+      invalidCode: "Código de verificación inválido",
+      twoFASuccess: "¡2FA activado con éxito!",
+      broadcastTitle: "📢 Mensaje de difusión",
+      broadcastPlaceholder: "📝 Escribe mensaje para enviar a todos los usuarios...",
+      sendBroadcastButton: "💬 Enviar difusión",
+      cancelButton: "❌ Cancelar",
+      manageRolesTitle: "⚙️ Gestionar roles de usuario",
+      saveRoleButton: "💾 Guardar rol",
+      currentRole: "Rol actual:",
+      userRole: "Usuario",
+      moderatorRole: "Moderador",
+      adminRole: "Administrador",
+      backupTitle: "💾 Copia de seguridad y restauración",
+      backupButton: "💾 Hacer copia",
+      restoreButton: "🔄 Restaurar",
+      backupSuccess: "¡Copia de seguridad creada con éxito!",
+      restoreSuccess: "¡Restauración completada con éxito!",
+      errorLogsTitle: "⚠️ Registros de errores",
+      clearLogsButton: "🗑️ Limpiar registros",
+      pluginsTitle: "🔌 Sistema de plugins",
+      addPluginButton: "➕ Añadir plugin",
+      closeAdminButton: "❌ Cerrar panel de administrador",
+      passwordsTitle: "🔑 Datos de contraseñas de usuarios",
+      copyButton: "Copiar",
+      closeModalButton: "❌ Cerrar",
+      fileUploadLabel: "📎 Adjuntar",
+      darkModeToggle: "🌙 Modo oscuro",
+      lightModeToggle: "☀️ Modo claro",
+      boldButton: "B",
+      italicButton: "I",
+      underlineButton: "U",
+      codeButton: "{ }",
+      linkButton: "🔗",
+      creatorInfo: "🤖 ChatG fue creado por Bloxaryn como desarrollador principal. Asistido por: Kimi AI, DeepSeek y ChatGPT."
+    },
+    fr: {
+      loginTitle: "💬 Connexion à ChatG",
+      usernamePlaceholder: "👤 Nom d'utilisateur (min 3 caractères)",
+      emailPlaceholder: "📧 Email (ex. utilisateur@exemple.com)",
+      passwordPlaceholder: "🔑 Mot de passe (min 6 caractères)",
+      twoFactorPlaceholder: "🔍 Code 2FA (6 chiffres)",
+      loginButton: "💬 Connexion",
+      googleLoginButton: "🌐 Connexion avec Google",
+      chatTitle: "💬 ChatG",
+      inputPlaceholder: "💬 Tapez votre question ici... (Maj+Entrée pour nouvelle ligne)",
+      sendButton: "💬 Envoyer",
+      saveChatButton: "💾 Enregistrer chat",
+      settingsButton: "⚙️ Paramètres",
+      rateLimitText: "Requêtes: {count}/{limit} par minute",
+      accountTab: "Compte",
+      savedTab: "Conversations",
+      appearanceTab: "Apparence",
+      accountSettingsTitle: "⚙️ Paramètres du compte",
+      usernameLabel: "👤 Nom d'utilisateur:",
+      emailLabel: "📧 Email:",
+      passwordLabel: "🔑 Mot de passe:",
+      adminButton: "👑 Panel admin",
+      adminProfileButton: "👑 Profil admin",
+      habilitado: "habilitado", 
+      deshabilitado: "deshabilitado",
+      twoFactorTitle: "🔍 Authentification à deux facteurs",
+      enabled: "activé",
+      disabled: "désactivé",
+      twoFactorStatus: "2FA est actuellement {status}",
+      enable2FAButton: "Activer 2FA",
+      disable2FAButton: "Désactiver 2FA",
+      logoutButton: "👋 Déconnexion",
+      clearAccountButton: "🗑️ Supprimer compte",
+      closeSettingsButton: "❌ Fermer",
+      savedChatsTitle: "💾 Conversations enregistrées",
+      searchChatPlaceholder: "🔍 Rechercher conversations...",
+      clearChatsButton: "🗑️ Tout effacer",
+      appearanceTitle: "🎨 Paramètres d'apparence",
+      personaLabel: "👤 Persona IA",
+      languageLabel: "🌐 Langue",
+      themeLabel: "🎨 Thème",
+      lightTheme: "Clair",
+      darkTheme: "Sombre",
+      systemTheme: "Système",
+      customTheme: "Personnalisé",
+      customThemeTitle: "🎨 Apparence personnalisée",
+      accentColorLabel: "Couleur d'accent:",
+      backgroundLabel: "Fond personnalisé:",
+      textColorLabel: "Couleur du texte:",
+      applyThemeButton: "💾 Appliquer thème",
+      resetThemeButton: "🔄 Réinitialiser",
+      themeGalleryText: "Choisir dans la galerie",
+      welcomeMessage: "💬 Bonjour, {username}! Je suis ChatG. Posez-moi vos questions.",
+      noSavedChats: "Aucune conversation enregistrée",
+      chatUntitled: "Conversation sans titre",
+      deleteConfirm: "Êtes-vous sûr de vouloir supprimer?",
+      deleteSuccess: "Supprimé avec succès",
+      deleteFail: "Échec de la suppression",
+      saveSuccess: "Enregistré avec succès!",
+      saveFail: "Échec de l'enregistrement",
+      requiredFields: "Tous les champs sont obligatoires!",
+      usernameLength: "Le nom d'utilisateur doit avoir au moins 3 caractères",
+      emailInvalid: "Format d'email invalide",
+      passwordLength: "Le mot de passe doit avoir au moins 6 caractères",
+      rateLimitExceeded: "Trop de tentatives de connexion. Veuillez patienter.",
+      codeRequired: "Veuillez entrer un code valide à 6 chiffres",
+      invalidCode: "Code de vérification invalide",
+      twoFASuccess: "2FA activé avec succès!",
+      broadcastTitle: "📢 Message de diffusion",
+      broadcastPlaceholder: "📝 Tapez message à envoyer à tous les utilisateurs...",
+      sendBroadcastButton: "💬 Envoyer diffusion",
+      cancelButton: "❌ Annuler",
+      manageRolesTitle: "⚙️ Gérer les rôles",
+      saveRoleButton: "💾 Enregistrer rôle",
+      currentRole: "Rôle actuel:",
+      userRole: "Utilisateur",
+      moderatorRole: "Modérateur",
+      adminRole: "Administrateur",
+      backupTitle: "💾 Sauvegarde & Restauration",
+      backupButton: "💾 Sauvegarder",
+      restoreButton: "🔄 Restaurer",
+      backupSuccess: "Sauvegarde créée avec succès!",
+      restoreSuccess: "Restauration terminée avec succès!",
+      errorLogsTitle: "⚠️ Journaux d'erreurs",
+      clearLogsButton: "🗑️ Effacer journaux",
+      pluginsTitle: "🔌 Système de plugins",
+      addPluginButton: "➕ Ajouter plugin",
+      closeAdminButton: "❌ Fermer panel admin",
+      passwordsTitle: "🔑 Données des mots de passe",
+      copyButton: "Copier",
+      closeModalButton: "❌ Fermer",
+      fileUploadLabel: "📎 Joindre",
+      darkModeToggle: "🌙 Mode sombre",
+      lightModeToggle: "☀️ Mode clair",
+      boldButton: "B",
+      italicButton: "I",
+      underlineButton: "U",
+      codeButton: "{ }",
+      linkButton: "🔗",
+      creatorInfo: "🤖 ChatG a été créé par Bloxaryn comme développeur principal. Assisté par: Kimi AI, DeepSeek et ChatGPT."
+    },
+    ko: {
+      loginTitle: "💬 ChatG 로그인",
+      usernamePlaceholder: "👤 사용자 이름 (최소 3자)",
+      emailPlaceholder: "📧 이메일 (예: user@example.com)",
+      passwordPlaceholder: "🔑 비밀번호 (최소 6자)",
+      twoFactorPlaceholder: "🔍 2FA 코드 (6자리)",
+      loginButton: "💬 로그인",
+      googleLoginButton: "🌐 Google로 로그인",
+      chatTitle: "💬 ChatG",
+      inputPlaceholder: "💬 여기에 질문을 입력하세요... (Shift+Enter로 줄 바꿈)",
+      sendButton: "💬 보내기",
+      saveChatButton: "💾 채팅 저장",
+      settingsButton: "⚙️ 설정",
+      rateLimitText: "요청: {count}/{limit} 분당",
+      accountTab: "계정",
+      savedTab: "대화 기록",
+      appearanceTab: "모양",
+      accountSettingsTitle: "⚙️ 계정 설정",
+      usernameLabel: "👤 사용자 이름:",
+      emailLabel: "📧 이메일:",
+      passwordLabel: "🔑 비밀번호:",
+      adminButton: "👑 관리자 패널",
+      adminProfileButton: "👑 관리자 프로필",
+      twoFactorTitle: "🔍 2단계 인증",
+      enabled: "활성화됨",
+      disabled: "장애가 있는",
+      twoFactorStatus: "2FA가 현재 {status}",
+      enable2FAButton: "2FA 활성화",
+      disable2FAButton: "2FA 비활성화",
+      logoutButton: "👋 로그아웃",
+      clearAccountButton: "🗑️ 계정 삭제",
+      closeSettingsButton: "❌ 닫기",
+      savedChatsTitle: "💾 저장된 대화",
+      searchChatPlaceholder: "🔍 대화 검색...",
+      clearChatsButton: "🗑️ 모두 지우기",
+      appearanceTitle: "🎨 모양 설정",
+      personaLabel: "👤 AI 페르소나",
+      languageLabel: "🌐 언어",
+      themeLabel: "🎨 테마",
+      lightTheme: "라이트",
+      darkTheme: "다크",
+      systemTheme: "시스템",
+      customTheme: "커스텀",
+      customThemeTitle: "🎨 커스텀 모양",
+      accentColorLabel: "강조 색상:",
+      backgroundLabel: "커스텀 배경:",
+      textColorLabel: "텍스트 색상:",
+      applyThemeButton: "💾 테마 적용",
+      resetThemeButton: "🔄 초기화",
+      themeGalleryText: "갤러리에서 선택",
+      welcomeMessage: "💬 안녕하세요, {username}! 저는 ChatG입니다. 무엇이든 질문해주세요.",
+      noSavedChats: "저장된 대화가 없습니다",
+      chatUntitled: "제목 없는 대화",
+      deleteConfirm: "정말 삭제하시겠습니까?",
+      deleteSuccess: "성공적으로 삭제됨",
+      deleteFail: "삭제 실패",
+      saveSuccess: "성공적으로 저장됨!",
+      saveFail: "저장 실패",
+      requiredFields: "모든 필드는 필수입니다!",
+      usernameLength: "사용자 이름은 최소 3자 이상이어야 합니다",
+      emailInvalid: "잘못된 이메일 형식",
+      passwordLength: "비밀번호는 최소 6자 이상이어야 합니다",
+      rateLimitExceeded: "로그인 시도가 너무 많습니다. 잠시 기다려주세요.",
+      codeRequired: "유효한 6자리 코드를 입력하세요",
+      invalidCode: "잘못된 인증 코드",
+      twoFASuccess: "2FA가 성공적으로 활성화되었습니다!",
+      broadcastTitle: "📢 브로드캐스트 메시지",
+      broadcastPlaceholder: "📝 모든 사용자에게 보낼 메시지 입력...",
+      sendBroadcastButton: "💬 브로드캐스트 보내기",
+      cancelButton: "❌ 취소",
+      manageRolesTitle: "⚙️ 사용자 역할 관리",
+      saveRoleButton: "💾 역할 저장",
+      currentRole: "현재 역할:",
+      userRole: "사용자",
+      moderatorRole: "중재자",
+      adminRole: "관리자",
+      backupTitle: "💾 백업 및 복원",
+      backupButton: "💾 데이터 백업",
+      restoreButton: "🔄 데이터 복원",
+      backupSuccess: "백업이 성공적으로 생성되었습니다!",
+      restoreSuccess: "복원이 성공적으로 완료되었습니다!",
+      errorLogsTitle: "⚠️ 오류 로그",
+      clearLogsButton: "🗑️ 로그 지우기",
+      pluginsTitle: "🔌 플러그인 시스템",
+      addPluginButton: "➕ 플러그인 추가",
+      closeAdminButton: "❌ 관리자 패널 닫기",
+      passwordsTitle: "🔑 사용자 비밀번호 데이터",
+      copyButton: "복사",
+      closeModalButton: "❌ 닫기",
+      fileUploadLabel: "📎 첨부",
+      darkModeToggle: "🌙 다크 모드",
+      lightModeToggle: "☀️ 라이트 모드",
+      boldButton: "B",
+      italicButton: "I",
+      underlineButton: "U",
+      codeButton: "{ }",
+      linkButton: "🔗",
+      creatorInfo: "🤖 ChatG는 주 개발자 Bloxaryn에 의해 만들어졌습니다. Kimi AI, DeepSeek 및 ChatGPT의 도움을 받았습니다."
+    },
+    ja: {
+      loginTitle: "💬 ChatGにログイン",
+      usernamePlaceholder: "👤 ユーザー名 (3文字以上)",
+      emailPlaceholder: "📧 メールアドレス (例: user@example.com)",
+      passwordPlaceholder: "🔑 パスワード (6文字以上)",
+      twoFactorPlaceholder: "🔍 2FAコード (6桁)",
+      loginButton: "💬 ログイン",
+      googleLoginButton: "🌐 Googleでログイン",
+      chatTitle: "💬 ChatG",
+      inputPlaceholder: "💬 ここに質問を入力... (Shift+Enterで改行)",
+      sendButton: "💬 送信",
+      saveChatButton: "💾 チャットを保存",
+      settingsButton: "⚙️ 設定",
+      rateLimitText: "リクエスト: {count}/{limit} 毎分",
+      accountTab: "アカウント",
+      savedTab: "会話履歴",
+      appearanceTab: "外観",
+      accountSettingsTitle: "⚙️ アカウント設定",
+      usernameLabel: "👤 ユーザー名:",
+      emailLabel: "📧 メールアドレス:",
+      passwordLabel: "🔑 パスワード:",
+      adminButton: "👑 管理者パネル",
+      adminProfileButton: "👑 管理者プロフィール",
+      twoFactorTitle: "🔍 二段階認証",
+      enabled: "活性化された",
+      disabled: "無効",
+      twoFactorStatus: "2FAは現在 {status}",
+      enable2FAButton: "2FAを有効化",
+      disable2FAButton: "2FAを無効化",
+      logoutButton: "👋 ログアウト",
+      clearAccountButton: "🗑️ アカウント削除",
+      closeSettingsButton: "❌ 閉じる",
+      savedChatsTitle: "💾 保存された会話",
+      searchChatPlaceholder: "🔍 会話を検索...",
+      clearChatsButton: "🗑️ すべて削除",
+      appearanceTitle: "🎨 外観設定",
+      personaLabel: "👤 AIペルソナ",
+      languageLabel: "🌐 言語",
+      themeLabel: "🎨 テーマ",
+      lightTheme: "ライト",
+      darkTheme: "ダーク",
+      systemTheme: "システム",
+      customTheme: "カスタム",
+      customThemeTitle: "🎨 カスタム外観",
+      accentColorLabel: "アクセントカラー:",
+      backgroundLabel: "カスタム背景:",
+      textColorLabel: "テキストカラー:",
+      applyThemeButton: "💾 テーマを適用",
+      resetThemeButton: "🔄 リセット",
+      themeGalleryText: "ギャラリーから選択",
+      welcomeMessage: "💬 こんにちは、{username}さん！私はChatGです。何でも質問してください。",
+      noSavedChats: "保存された会話はありません",
+      chatUntitled: "タイトルなしの会話",
+      deleteConfirm: "本当に削除しますか？",
+      deleteSuccess: "削除に成功しました",
+      deleteFail: "削除に失敗しました",
+      saveSuccess: "保存に成功しました！",
+      saveFail: "保存に失敗しました",
+      requiredFields: "すべての項目は必須です！",
+      usernameLength: "ユーザー名は3文字以上必要です",
+      emailInvalid: "無効なメール形式です",
+      passwordLength: "パスワードは6文字以上必要です",
+      rateLimitExceeded: "ログイン試行が多すぎます。しばらくお待ちください。",
+      codeRequired: "有効な6桁のコードを入力してください",
+      invalidCode: "無効な認証コードです",
+      twoFASuccess: "2FAが有効化されました！",
+      broadcastTitle: "📢 ブロードキャストメッセージ",
+      broadcastPlaceholder: "📝 全ユーザーに送信するメッセージを入力...",
+      sendBroadcastButton: "💬 ブロードキャスト送信",
+      cancelButton: "❌ キャンセル",
+      manageRolesTitle: "⚙️ ユーザーロール管理",
+      saveRoleButton: "💾 ロールを保存",
+      currentRole: "現在のロール:",
+      userRole: "ユーザー",
+      moderatorRole: "モデレーター",
+      adminRole: "管理者",
+      backupTitle: "💾 バックアップと復元",
+      backupButton: "💾 データをバックアップ",
+      restoreButton: "🔄 データを復元",
+      backupSuccess: "バックアップが作成されました！",
+      restoreSuccess: "復元が完了しました！",
+      errorLogsTitle: "⚠️ エラーログ",
+      clearLogsButton: "🗑️ ログをクリア",
+      pluginsTitle: "🔌 プラグインシステム",
+      addPluginButton: "➕ プラグインを追加",
+      closeAdminButton: "❌ 管理者パネルを閉じる",
+      passwordsTitle: "🔑 ユーザーパスワードデータ",
+      copyButton: "コピー",
+      closeModalButton: "❌ 閉じる",
+      fileUploadLabel: "📎 添付",
+      darkModeToggle: "🌙 ダークモード",
+      lightModeToggle: "☀️ ライトモード",
+      boldButton: "B",
+      italicButton: "I",
+      underlineButton: "U",
+      codeButton: "{ }",
+      linkButton: "🔗",
+      creatorInfo: "🤖 ChatGはBloxarynによって開発されました。Kimi AI、DeepSeek、ChatGPTの協力を得ています。"
+    }
+  };
 
     // Simulasikan backend sederhana
     class ChatGBackend {
@@ -1532,6 +2140,48 @@
           weeklyUsage: [30, 50, 70, 90, 60, 40, 20]
         };
       }
+      
+  checkRateLimit(email) {
+    const now = Date.now();
+    const window = 60 * 1000;
+    const limit = 10; // Nilai tetap 10
+
+    if (!this.rateLimits[email]) {
+      this.rateLimits[email] = { count: 1, startTime: now };
+      return { 
+        allowed: true,
+        remaining: limit - 1,
+        limit: limit // Selalu kirim nilai limit
+      };
+    }
+
+    const userLimit = this.rateLimits[email];
+    
+    if (now - userLimit.startTime > window) {
+      userLimit.count = 1;
+      userLimit.startTime = now;
+      return {
+        allowed: true,
+        remaining: limit - 1,
+        limit: limit
+      };
+    }
+
+    if (userLimit.count >= limit) {
+      return {
+        allowed: false,
+        remaining: 0,
+        limit: limit
+      };
+    }
+
+    userLimit.count++;
+    return {
+      allowed: true,
+      remaining: limit - userLimit.count,
+      limit: limit
+    };
+  }
 
       async generateResponse(userInput) {
         // Check for creator-related questions first
@@ -1599,73 +2249,42 @@
       }
       
       checkForCreatorQuestions(userInput) {
-        const lowerInput = userInput.toLowerCase();
-        
-        // Check for questions about the creator
-        if (lowerInput.includes('siapa penciptamu') || 
-            lowerInput.includes('siapa pembuatmu') || 
-            lowerInput.includes('siapa yang membuatmu') ||
-            lowerInput.includes('siapa developer mu') ||
-            lowerInput.includes('siapa yang menciptakanmu')) {
-          return `🌟 <div class="creator-info">
-            <div class="creator-title">🤖 Tentang Saya:</div>
-            <p>Saya adalah ChatG, asisten virtual berbasis AI yang menggunakan teknologi Gemini API. Saya dibuat oleh tim kreatif berikut:</p>
-            
-            <div class="creator-list">
-              <div class="creator-list-item"><strong>Bloxaryn</strong> - Konseptor utama dan pengembang</div>
-              <div class="creator-list-item"><strong>Kimi</strong> - Spesialis AI dan pengembangan fitur</div>
-              <div class="creator-list-item"><strong>DeepSeek</strong> - Penyedia teknologi AI canggih</div>
-              <div class="creator-list-item"><strong>ChatGPT</strong> - Inspirasi dan kontributor ide</div>
-            </div>
-            
-            <div class="creator-title">💡 Ide Awal:</div>
-            <p>Proyek ini dimulai oleh Bloxaryn dengan visi menciptakan asisten AI yang mudah digunakan dengan antarmuka yang menarik.</p>
-          </div>`;
-        }
-        
-        // Check for questions about the AI's name
-        if (lowerInput.includes('siapa namamu') || 
-            lowerInput.includes('apa nama mu') || 
-            lowerInput.includes('kamu siapa') ||
-            lowerInput.includes('perkenalkan dirimu')) {
-          return `🤖 <div class="creator-info">
-            <div class="creator-title">✨ Perkenalan:</div>
-            <p>Halo! Saya adalah ChatG, asisten virtual berbasis AI yang menggunakan teknologi Gemini API.</p>
-            
-            <div class="creator-list">
-              <div class="creator-list-item">Dibuat oleh tim kreatif: <strong>Bloxaryn</strong>, <strong>Kimi</strong>, dan kolaborator lainnya</div>
-              <div class="creator-list-item">Didukung oleh teknologi <strong>DeepSeek</strong> dan <strong>ChatGPT</strong></div>
-              <div class="creator-list-item">API yang digunakan: <strong>Gemini AI</strong> dari Google</div>
-            </div>
-            
-            <p>Saya siap membantu Anda dengan berbagai pertanyaan dan kebutuhan informasi!</p>
-          </div>`;
-        }
-        
-        // Check for social media questions
-        if (lowerInput.includes('medsos pembuat') || 
-            lowerInput.includes('sosial media developer') || 
-            lowerInput.includes('instagram pembuat') ||
-            lowerInput.includes('tiktok pembuat') ||
-            lowerInput.includes('youtube pembuat') ||
-            lowerInput.includes('thread pembuat')) {
-          return `📱 <div class="creator-info">
-            <div class="creator-title">🌐 Media Sosial Developer:</div>
-            <p>Anda dapat menemukan pembuat saya (Bloxaryn) di platform berikut:</p>
-            
-            <div class="social-media-list">
-              <div class="social-media-item"><span class="social-media-icon">🎵</span> TikTok: @Bloxaryn</div>
-              <div class="social-media-item"><span class="social-media-icon">▶️</span> YouTube: DwikaHadiw.1234</div>
-              <div class="social-media-item"><span class="social-media-icon">📷</span> Instagram: @Bloxaryn</div>
-              <div class="social-media-item"><span class="social-media-icon">🧵</span> Thread: @Bloxaryn</div>
-            </div>
-            
-            <p>Jangan ragu untuk mengikuti dan mendukung kreator saya di platform tersebut!</p>
-          </div>`;
-        }
-        
-        return null;
-      }
+  const lowerInput = userInput.toLowerCase();
+
+  // Daftar kata kunci pertanyaan developer
+  const developerKeywords = [
+    'siapa penciptamu', 'siapa pembuatmu', 'siapa yang membuatmu',
+    'siapa developer chatg', 'siapa yang menciptakanmu', 'kamu siapa',
+    'siapa namamu', 'apa nama mu', 'perkenalkan dirimu'
+  ];
+
+  if (developerKeywords.some(k => lowerInput.includes(k))) {
+    return `🤖 **ChatG** dibuat oleh **Bloxaryn** sebagai **developer utama**.  
+Dibantu oleh:  
+- 🧠 **Kimi AI** – kontributor AI & logika  
+- 🔍 **DeepSeek** – teknologi model reasoning  
+- 💬 **ChatGPT** – inspirasi & struktur konten  
+
+ChatG menggunakan **Gemini API** dari Google untuk menjawab pertanyaan secara real-time.`;
+  }
+
+  // Pertanyaan media sosial developer
+  if (lowerInput.includes('medsos pembuat') || 
+      lowerInput.includes('instagram pembuat') || 
+      lowerInput.includes('tiktok pembuat') ||
+      lowerInput.includes('youtube pembuat') ||
+      lowerInput.includes('thread pembuat')) {
+    return `📱 **Media Sosial Bloxaryn (Pembuat ChatG):**  
+- 🎵 TikTok: [@Bloxaryn](https://www.tiktok.com/@Bloxaryn)  
+- ▶️ YouTube: [DwikaHadiw.1234](https://www.youtube.com/@DwikaHadiw.1234)  
+- 📷 Instagram: [@Bloxaryn](https://www.instagram.com/Bloxaryn)  
+- 🧵 Thread: [@Bloxaryn](https://www.threads.net/@Bloxaryn)  
+
+Jangan lupa follow & dukung!`;
+  }
+
+  return null;
+}
       
       saveCode(code) {
         this.savedCode = code;
@@ -2046,6 +2665,314 @@ document.getElementById("adminProfileBtn").addEventListener('click', function() 
   window.open('https://bloxarynai.github.io/Bloxaryn/', '_blank');
 });
 
+   function safeRateLimitUpdate() {
+  try {
+    updateRateLimit();
+  } catch (error) {
+    console.error("Error updating rate limit:", error);
+    // Fallback ke nilai default
+    const t = translations[appState.currentLanguage || 'id'];
+    document.querySelector(".rate-limit-info").textContent = 
+      t.rateLimitText.replace("{count}", "10").replace("{limit}", "10");
+  }
+}
+
+   function applyTranslations(lang) {
+    const t = translations[lang];
+    if (!t) {
+        console.error(`Translations not found for language: ${lang}`);
+        return;
+    }
+
+    // 1. Login Page Elements
+    if (document.getElementById("loginContainer")) {
+        document.getElementById("loginContainer").querySelector("h2").textContent = t.loginTitle;
+        document.getElementById("username").placeholder = t.usernamePlaceholder;
+        document.getElementById("email").placeholder = t.emailPlaceholder;
+        document.getElementById("password").placeholder = t.passwordPlaceholder;
+        document.getElementById("twoFactorCode").placeholder = t.twoFactorPlaceholder;
+        document.getElementById("loginBtn").textContent = t.loginButton;
+        document.getElementById("googleLoginBtn").textContent = t.googleLoginButton;
+    }
+
+    // 2. Main Chat Interface
+    if (document.querySelector(".chat-header")) {
+        document.querySelector(".chat-header").textContent = t.chatTitle;
+    }
+    
+    const userInput = document.getElementById("userInput");
+    if (userInput) userInput.placeholder = t.inputPlaceholder;
+
+    // 3. Buttons and Toolbar
+    const buttons = {
+        "#sendBtn": t.sendButton,
+        "#saveChatBtn": t.saveChatButton,
+        "#settingsBtn": t.settingsButton,
+        "#fileUploadLabel": t.fileUploadLabel,
+        "#boldBtn": t.boldButton,
+        "#italicBtn": t.italicButton,
+        "#underlineBtn": t.underlineButton,
+        "#codeBtn": t.codeButton,
+        "#linkBtn": t.linkButton,
+        "#themeToggle": appState.darkMode ? t.lightModeToggle : t.darkModeToggle
+    };
+
+    Object.entries(buttons).forEach(([selector, text]) => {
+        const element = document.querySelector(selector);
+        if (element) element.textContent = text;
+    });
+
+    // 4. Settings Panel
+    if (document.getElementById("settingsPanel")) {
+        // Tabs
+        const tabs = document.querySelectorAll(".settings-tab");
+        if (tabs.length >= 3) {
+            tabs[0].textContent = t.accountTab;
+            tabs[1].textContent = t.savedTab;
+            tabs[2].textContent = t.appearanceTab;
+        }
+
+        // Account Tab
+const accountTab = document.getElementById("accountTab");
+if (accountTab) {
+    // Update judul tab
+    accountTab.querySelector("h3").textContent = t.accountSettingsTitle;
+    
+    // Update field informasi akun
+    const accountFields = accountTab.querySelectorAll("p");
+    if (accountFields.length >= 3) {
+        // Simpan data user yang ada sebelum diupdate
+        const currentUsername = document.getElementById("infoUsername")?.textContent || "-";
+        const currentEmail = document.getElementById("infoEmail")?.textContent || "-";
+        const currentPassword = document.getElementById("infoPassword")?.textContent || "-";
+        
+        // Update hanya labelnya saja, pertahankan data user
+        accountFields[0].innerHTML = `<strong>${t.usernameLabel}</strong> <span id="infoUsername">${currentUsername}</span>`;
+        accountFields[1].innerHTML = `<strong>${t.emailLabel}</strong> <span id="infoEmail">${currentEmail}</span>`;
+        accountFields[2].innerHTML = `<strong>${t.passwordLabel}</strong> <span id="infoPassword">${currentPassword}</span>`;
+    }
+    
+    // Update tombol-tombol
+    const accountButtons = {
+        "#adminBtn": t.adminButton,
+        "#adminProfileBtn": t.adminProfileButton,
+        "#logoutBtn": t.logoutButton,
+        "#clearAccountBtn": t.clearAccountButton,
+        "#closeSettingsBtn": t.closeSettingsButton,
+        "#toggle2FABtn": appState.currentUser?.twoFactorEnabled ? t.disable2FAButton : t.enable2FAButton
+    };
+
+    Object.entries(accountButtons).forEach(([selector, text]) => {
+        const btn = accountTab.querySelector(selector);
+        if (btn) btn.textContent = text;
+    });
+
+            // 2FA Status
+            const twoFactorStatus = document.getElementById("twoFactorStatus");
+            if (twoFactorStatus) {
+                twoFactorStatus.innerHTML = t.twoFactorStatus.replace("{status}", 
+                    `<strong>${appState.currentUser?.twoFactorEnabled ? t.enabled : t.disabled}</strong>`);
+            }
+        }
+
+        // Saved Chats Tab
+        const savedTab = document.getElementById("savedTab");
+        if (savedTab) {
+            savedTab.querySelector("h3").textContent = t.savedChatsTitle;
+            const searchInput = savedTab.querySelector("input[type='text']");
+            if (searchInput) searchInput.placeholder = t.searchChatPlaceholder;
+            
+            const clearBtn = savedTab.querySelector("button.danger");
+            if (clearBtn) clearBtn.textContent = t.clearChatsButton;
+        }
+
+        // Appearance Tab
+        const appearanceTab = document.getElementById("appearanceTab");
+        if (appearanceTab) {
+            appearanceTab.querySelector("h3").textContent = t.appearanceTitle;
+            
+            const labels = appearanceTab.querySelectorAll("h4");
+            if (labels.length >= 3) {
+                labels[0].textContent = t.personaLabel;
+                labels[1].textContent = t.languageLabel;
+                labels[2].textContent = t.themeLabel;
+            }
+
+            // Persona Selector Options
+            const personaOptions = {
+                "assistant": t.personaAssistant,
+                "friend": t.personaFriend,
+                "expert": t.personaExpert,
+                "creative": t.personaCreative
+            };
+
+            const personaSelect = document.getElementById("personaSelector");
+            if (personaSelect) {
+                Array.from(personaSelect.options).forEach(option => {
+                    option.text = personaOptions[option.value] || option.text;
+                });
+            }
+
+            // Custom Theme Section
+            const customThemeSection = document.getElementById("customThemeSection");
+            if (customThemeSection) {
+                customThemeSection.querySelector("h4").textContent = t.customThemeTitle;
+                
+                const colorLabels = customThemeSection.querySelectorAll("label");
+                if (colorLabels.length >= 3) {
+                    colorLabels[0].textContent = t.accentColorLabel;
+                    colorLabels[1].textContent = t.backgroundLabel;
+                    colorLabels[2].textContent = t.textColorLabel;
+                }
+
+                const themeButtons = {
+                    "#applyCustomThemeBtn": t.applyThemeButton,
+                    "#resetCustomThemeBtn": t.resetThemeButton
+                };
+
+                Object.entries(themeButtons).forEach(([selector, text]) => {
+                    const btn = customThemeSection.querySelector(selector);
+                    if (btn) btn.textContent = text;
+                });
+            }
+        }
+    }
+
+    // 5. Modals
+    updateModalTranslations(t);
+
+    // 6. Dynamic Content
+    updateDynamicContent(lang);
+
+    // 7. Update welcome message if user is logged in
+    if (appState.currentUser && document.getElementById("chatHistory")) {
+        const welcomeMessage = t.welcomeMessage.replace("{username}", appState.currentUser.username);
+        const chatHistory = document.getElementById("chatHistory");
+        
+        if (chatHistory.children.length === 0) {
+            addMessage(welcomeMessage, 'ai');
+        } else if (chatHistory.children[0].classList.contains('ai-message')) {
+            chatHistory.children[0].querySelector(".message-text").innerHTML = welcomeMessage;
+        }
+    }
+
+    console.log(`Applied ${lang} translations successfully`);
+}
+
+// Helper function for modal translations
+function updateModalTranslations(t) {
+    // Admin Modal
+    const adminModal = document.getElementById("adminModal");
+    if (adminModal) {
+        adminModal.querySelector("h3").textContent = t.adminButton;
+        
+        const adminButtons = {
+            "#viewPasswordsBtn": t.passwordsTitle,
+            "#executeCodeBtn": t.executeCodeButton,
+            "#saveCodeBtn": t.saveCodeButton,
+            "#loadFileBtn": t.loadFileButton,
+            "#saveFileBtn": t.saveFileButton,
+            "#refreshUsersBtn": t.refreshButton,
+            "#exportUsersBtn": t.exportButton,
+            "#broadcastBtn": t.broadcastButton,
+            "#manageRolesBtn": t.manageRolesButton,
+            "#backupBtn": t.backupButton,
+            "#restoreBtn": t.restoreButton,
+            "#clearErrorLogsBtn": t.clearLogsButton,
+            "#addPluginBtn": t.addPluginButton,
+            "#closeAdminModalBtn": t.closeButton
+        };
+
+        Object.entries(adminButtons).forEach(([selector, text]) => {
+            const btn = adminModal.querySelector(selector);
+            if (btn) btn.textContent = text;
+        });
+    }
+
+    // Password Modal
+    const passwordModal = document.getElementById("passwordModal");
+    if (passwordModal) {
+        passwordModal.querySelector("h3").textContent = t.passwordsTitle;
+        passwordModal.querySelectorAll(".copy-btn").forEach(btn => {
+            btn.textContent = t.copyButton;
+        });
+    }
+
+    // ... tambahkan modal lainnya sesuai kebutuhan
+}
+
+// Helper function for dynamic content
+function updateDynamicContent(lang) {
+    const t = translations[lang];
+    
+    // Rate Limit
+    const rateLimitElement = document.querySelector(".rate-limit-info");
+    if (rateLimitElement) {
+        const rateLimit = appState.backend.checkRateLimit(appState.currentUser?.email || '');
+        rateLimitElement.textContent = t.rateLimitText
+            .replace("{count}", rateLimit.remaining)
+            .replace("{limit}", rateLimit.limit);
+    }
+
+    // Saved Chats
+    const noChatsElement = document.querySelector(".saved-chat-item");
+    if (noChatsElement && noChatsElement.textContent.includes("Memuat") || 
+        noChatsElement.textContent.includes("Loading")) {
+        noChatsElement.textContent = t.noSavedChats;
+    }
+}
+
+  function update2FAStatus() {
+    const t = translations[appState.currentLanguage];
+    if (!t || !appState.currentUser) return;
+
+    const statusElement = document.getElementById("twoFactorStatus");
+    const button = document.getElementById("toggle2FABtn");
+
+    if (appState.currentUser.twoFactorEnabled) {
+      statusElement.innerHTML = t.twoFactorStatus.replace("{status}", "<strong>" + t.enable2FAButton.replace("Activer", "activé") + "</strong>");
+      button.textContent = t.disable2FAButton;
+    } else {
+      statusElement.innerHTML = t.twoFactorStatus.replace("{status}", "<strong>" + t.disable2FAButton.replace("Désactiver", "désactivé") + "</strong>");
+      button.textContent = t.enable2FAButton;
+    }
+  }
+
+  function updateRateLimit() {
+  if (!appState.currentUser) return;
+
+  const t = translations[appState.currentLanguage];
+  const rateLimit = appState.backend.checkRateLimit(appState.currentUser.email);
+  
+  // Gunakan limit dari backend atau default 10
+  const limit = rateLimit.limit || parseInt(t.limitText) || 10;
+  const remaining = rateLimit.remaining || limit;
+
+  // Format teks
+  const rateLimitText = t.rateLimitText
+    .replace("{count}", remaining)
+    .replace("{limit}", limit);
+
+  // Update tampilan
+  document.querySelector(".rate-limit-info").innerHTML = rateLimitText;
+}
+
+  // Add event listener for language selector
+  document.getElementById("languageSelector").addEventListener("change", function() {
+    const lang = this.value;
+    appState.currentLanguage = lang;
+    localStorage.setItem("chatg_language", lang);
+    applyTranslations(lang);
+  });
+
+  // Apply translations on page load
+  document.addEventListener("DOMContentLoaded", function() {
+    const savedLanguage = localStorage.getItem("chatg_language") || "id";
+    document.getElementById("languageSelector").value = savedLanguage;
+    appState.currentLanguage = savedLanguage;
+    applyTranslations(savedLanguage);
+  });
+  
     function setupEventListeners() {
       // Login buttons
       document.getElementById("loginBtn").addEventListener('click', handleLogin);
@@ -2473,6 +3400,8 @@ document.getElementById("adminProfileBtn").addEventListener('click', function() 
         document.getElementById("adminBtn").style.display = "block";
         document.getElementById("viewPasswordsBtn").style.display = "inline-block";
       }
+      
+      updateRateLimit();
 
       // Pindah ke chat interface
       showChat(user);
@@ -2489,6 +3418,14 @@ document.getElementById("adminProfileBtn").addEventListener('click', function() 
       
       // Update rate limit display
       updateRateLimit();
+      
+      // Di event listener ganti bahasa:
+document.getElementById("languageSelector").addEventListener("change", function() {
+  appState.currentLanguage = this.value;
+  localStorage.setItem("chatg_language", this.value);
+  applyTranslations(this.value);
+  updateRateLimit(); // Tambahkan ini
+});
       
       // Apply custom theme if selected
       if (document.getElementById("themeSelector").value === 'custom') {
@@ -2513,14 +3450,19 @@ document.getElementById("adminProfileBtn").addEventListener('click', function() 
     }
 
     function showChat(user) {
-      document.getElementById("loginContainer").style.display = "none";
-      document.getElementById("chatContainer").style.display = "block";
-      
-      // Update info pengguna di panel settings
-      document.getElementById("infoUsername").textContent = user.username;
-      document.getElementById("infoEmail").textContent = user.email;
-      document.getElementById("infoPassword").textContent = user.password;
-    }
+  document.getElementById("loginContainer").style.display = "none";
+  document.getElementById("chatContainer").style.display = "block";
+
+  // Perbarui info pengguna di panel settings
+  document.getElementById("infoUsername").textContent = user.username || "-";
+  document.getElementById("infoEmail").textContent = user.email || "-";
+  document.getElementById("infoPassword").textContent = user.password || "-";
+
+  // Tampilkan tombol admin jika user adalah admin
+  if (user.role === 'admin') {
+    document.getElementById("adminBtn").style.display = "block";
+  }
+}
 
     function toggleSettings() {
       const panel = document.getElementById("settingsPanel");
@@ -3175,10 +4117,21 @@ document.getElementById("adminProfileBtn").addEventListener('click', function() 
     }
 
     function updateRateLimit() {
-      const limit = appState.backend.checkRateLimit(appState.currentUser.email);
-      document.getElementById("requestCount").textContent = limit.remaining;
-      document.getElementById("requestLimit").textContent = 10; // Hardcoded for now
-    }
+  if (!appState.currentUser) return;
+
+  // Dapatkan limit dari backend (default 10 jika undefined)
+  const rateLimit = appState.backend.checkRateLimit(appState.currentUser.email);
+  const remaining = rateLimit.remaining ?? 10; // Nilai default 10 jika undefined
+  const limit = rateLimit.limit ?? 10; // Nilai default 10 jika undefined
+
+  // Update tampilan
+  const t = translations[appState.currentLanguage];
+  const rateLimitText = t.rateLimitText
+    .replace("{count}", remaining)
+    .replace("{limit}", limit);
+  
+  document.querySelector(".rate-limit-info").textContent = rateLimitText;
+}
 
     function handleFileUpload(event) {
       const file = event.target.files[0];
@@ -3281,4 +4234,5 @@ document.getElementById("adminProfileBtn").addEventListener('click', function() 
     }
   </script>
 </body>
+</html>
 </html>
