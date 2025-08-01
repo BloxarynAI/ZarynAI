@@ -4,11 +4,729 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZarynAI</title>
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4285f4;
+            --secondary-color: #34a853;
+            --danger-color: #ea4335;
+            --warning-color: #fbbc05;
+            --text-color: #333;
+            --bg-color: #f5f5f5;
+            --card-color: #fff;
+            --border-color: #ddd;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --sidebar-bg: #2c3e50;
+            --sidebar-text: #ecf0f1;
+        }
+
+        .dark-mode {
+            --primary-color: #5a95f5;
+            --secondary-color: #48bb6c;
+            --danger-color: #f15a4a;
+            --warning-color: #ffd339;
+            --text-color: #f0f0f0;
+            --bg-color: #121212;
+            --card-color: #1e1e1e;
+            --border-color: #444;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --sidebar-bg: #1a1a1a;
+            --sidebar-text: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Auth Forms */
+        .auth-forms {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .form-container {
+            background-color: var(--card-color);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            width: 100%;
+            max-width: 400px;
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-group .icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 12px 12px 35px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: var(--card-color);
+            color: var(--text-color);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: #333;
+        }
+
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .toggle-form a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .toggle-form a:hover {
+            text-decoration: underline;
+        }
+
+        /* AI Container */
+        #ai-container {
+            display: none;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 280px;
+            height: 100vh;
+            background-color: var(--sidebar-bg);
+            color: var(--sidebar-text);
+            transition: left 0.3s;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-icon {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .sidebar-header h3 {
+            flex-grow: 1;
+        }
+
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: var(--sidebar-text);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar-menu li {
+            padding: 10px 20px;
+        }
+
+        .sidebar-menu li:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-menu a {
+            color: var(--sidebar-text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .theme-toggle span {
+            flex-grow: 1;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .copyright {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* AI Chat */
+        .ai-chat-container {
+            background-color: var(--card-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            overflow: hidden;
+        }
+
+        .ai-chat-header {
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-icon {
+            font-size: 24px;
+        }
+
+        .ai-chat-messages {
+            height: 500px;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background-color: var(--primary-color);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-message {
+            background-color: var(--border-color);
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+        }
+
+        .ai-chat-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .ai-chat-input input {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px 0 0 4px;
+        }
+
+        .ai-chat-input button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0 20px;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+
+        /* Model Selection */
+        .model-selector {
+            margin-bottom: 20px;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            padding: 20px;
+        }
+
+        .admin-content {
+            margin-top: 20px;
+        }
+
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background-color: var(--card-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            text-align: center;
+        }
+
+        .stat-card i {
+            font-size: 40px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .stat-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .stat-card p {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .user-list {
+            background-color: var(--card-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: rgba(0, 0, 0, 0.05);
+            font-weight: 500;
+        }
+
+        tr:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Account Page */
+        #account-container {
+            background-color: var(--card-color);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #account-container .logout-btn {
+            width: auto;
+            padding: 12px 24px;
+            margin-top: 20px;
+            background-color: var(--danger-color);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+
+        /* History Page */
+        .history-item {
+            background-color: var(--card-color);
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .session-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Model Cards */
+        .model-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .model-card {
+            background-color: var(--card-color);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+
+        .model-card h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .model-card p {
+            margin-bottom: 15px;
+        }
+
+        /* Utility Classes */
+        .hidden {
+            display: none !important;
+        }
+
+        .admin-only {
+            display: none;
+        }
+
+        .is-admin .admin-only {
+            display: block;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-10 {
+            margin-top: 10px;
+        }
+
+        .mt-20 {
+            margin-top: 20px;
+        }
+
+        .mb-20 {
+            margin-bottom: 20px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 250px;
+            }
+            
+            .ai-chat-messages {
+                height: 400px;
+            }
+            
+            .admin-stats, .model-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-right {
+                flex-direction: column;
+                align-items: flex-end;
+            }
+        }
+
+        /* Tambahan kecil: pastikan tombol tidak tertutup */
+        .btn,
+        button,
+        .sidebar a,
+        .close-sidebar,
+        .select-model {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* User Detail Modal */
+        .user-detail-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .user-detail-content {
+            background-color: var(--card-color);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .user-detail-content h3 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .user-detail-content .form-group {
+            margin-bottom: 15px;
+        }
+
+        .user-detail-content label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .user-detail-content input {
+            padding-left: 10px;
+        }
+
+        .user-detail-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .user-detail-actions .btn {
+            flex: 1;
+        }
+
+        /* History buttons spacing */
+        .history-actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .history-actions .btn {
+            flex: 1;
+        }
+
+        /* Login history styling */
+        #login-history table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        #login-history th,
+        #login-history td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        #login-history th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+
+        #login-history tr:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+    </style>
 </head>
 <body class="light-mode">
-    <div id="auth-container">
+    <!-- Authentication Container -->
+    <div class="container" id="auth-container">
         <div class="auth-forms">
             <div class="form-container active" id="login-form">
                 <h2>Login</h2>
@@ -52,14 +770,21 @@
         </div>
     </div>
 
-    <div id="ai-container">
+    <!-- Main AI Container -->
+    <div class="container" id="ai-container">
         <header>
             <div class="header-left">
-                <button class="hamburger-btn" id="hamburger-btn"><i class="fas fa-bars"></i></button>
+                <button class="hamburger-btn" id="hamburger-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <h1>ZarynAI</h1>
+            </div>
+            <div class="header-right">
+                <!-- Email removed from header -->
             </div>
         </header>
 
+        <!-- Sidebar Navigation -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <i class="fas fa-robot sidebar-icon"></i>
@@ -67,68 +792,90 @@
                 <button class="close-sidebar" id="close-sidebar">&times;</button>
             </div>
             <ul class="sidebar-menu">
-                <li><a href="#" id="home-link"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="#" id="chats-link"><i class="fas fa-comments"></i> Chats</a></li>
-                <li><a href="#" id="ai-models-link"><i class="fas fa-brain"></i> AI Models</a></li>
-                <li><a href="#" id="history-link"><i class="fas fa-history"></i> History</a></li>
-                <li><a href="#" id="account-link"><i class="fas fa-user"></i> Account</a></li>
-                <li class="admin-only"><a href="#" id="admin-panel-link"><i class="fas fa-users-cog"></i> Admin Panel</a></li>
+                <li><a href="#" id="home-link"><i class="fas fa-home sidebar-icon"></i> Home</a></li>
+                <li><a href="#" id="chats-link"><i class="fas fa-comments sidebar-icon"></i> Chats</a></li>
+                <li><a href="#" id="ai-models-link"><i class="fas fa-brain sidebar-icon"></i> AI Models</a></li>
+                <li><a href="#" id="history-link"><i class="fas fa-history sidebar-icon"></i> History</a></li>
+                <li><a href="#" id="account-link"><i class="fas fa-user sidebar-icon"></i> Account</a></li>
+                <li class="admin-only"><a href="#" id="admin-panel-link"><i class="fas fa-users-cog sidebar-icon"></i> Admin Panel</a></li>
             </ul>
             <div class="sidebar-footer">
                 <div class="theme-toggle">
-                    <i class="fas fa-moon"></i>
+                    <i class="fas fa-moon sidebar-icon"></i>
                     <span>Dark Mode</span>
                     <label class="switch">
                         <input type="checkbox" id="theme-toggle">
                         <span class="slider round"></span>
                     </label>
                 </div>
+                <div class="copyright">
+                    <i class="fas fa-copyright sidebar-icon"></i>
+                    <span>2023 ZarynAI. All rights reserved.</span>
+                </div>
             </div>
         </div>
 
+        <!-- Main Content Area -->
         <main>
+            <!-- Home Screen -->
             <div id="home-screen" class="screen">
                 <h2>Welcome to ZarynAI</h2>
-                <div class="quick-stats">
-                    <div class="stat-card">
-                        <i class="fas fa-comments"></i>
-                        <h3>Total Chats</h3>
-                        <p id="total-chats">0</p>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-robot"></i>
-                        <h3>AI Requests</h3>
-                        <p id="user-total-requests">0</p>
+                <p>This is your personal AI assistant. Use the navigation menu to explore different features.</p>
+                
+                <div class="quick-stats mt-20">
+                    <h3>Quick Stats</h3>
+                    <div class="admin-stats">
+                        <div class="stat-card">
+                            <i class="fas fa-comments"></i>
+                            <h3>Total Chats</h3>
+                            <p id="total-chats">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-robot"></i>
+                            <h3>AI Requests</h3>
+                            <p id="user-total-requests">0</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- AI Models Screen -->
             <div id="ai-models-screen" class="screen">
                 <h2>AI Models</h2>
-                <select id="model-select">
-                    <option value="gemini-flash">Gemini 2.0 Flash</option>
-                    <option value="gemini-pro">Gemini 1.5 Pro</option>
-                    <option value="gpt-3">GPT-3.5</option>
-                </select>
+                <p>Select an AI model to interact with:</p>
+                
+                <div class="model-selector">
+                    <select id="model-select" class="form-group">
+                        <option value="gemini-flash">Gemini 2.0 Flash (Default)</option>
+                        <option value="gemini-pro">Gemini 1.5 Pro</option>
+                        <option value="gpt-3">GPT-3.5</option>
+                    </select>
+                </div>
+                
                 <div class="model-cards">
                     <div class="model-card">
-                        <h3>Gemini 2.0 Flash</h3>
-                        <button class="btn select-model" data-model="gemini-flash">Select</button>
+                        <h3><i class="fas fa-bolt"></i> Gemini 2.0 Flash</h3>
+                        <p>Fast and efficient model for quick responses and general queries.</p>
+                        <button class="btn btn-secondary select-model" data-model="gemini-flash"><i class="fas fa-check"></i> Select</button>
                     </div>
                     <div class="model-card">
-                        <h3>Gemini 1.5 Pro</h3>
-                        <button class="btn select-model" data-model="gemini-pro">Select</button>
+                        <h3><i class="fas fa-cogs"></i> Gemini 1.5 Pro</h3>
+                        <p>More advanced model for complex questions and detailed responses.</p>
+                        <button class="btn btn-secondary select-model" data-model="gemini-pro"><i class="fas fa-check"></i> Select</button>
                     </div>
                     <div class="model-card">
-                        <h3>GPT-3.5</h3>
-                        <button class="btn select-model" data-model="gpt-3">Select</button>
+                        <h3><i class="fas fa-lightbulb"></i> GPT-3.5</h3>
+                        <p>OpenAI's model for creative writing and general conversation.</p>
+                        <button class="btn btn-secondary select-model" data-model="gpt-3"><i class="fas fa-check"></i> Select</button>
                     </div>
                 </div>
             </div>
 
+            <!-- Chat Screen (Default Active) -->
             <div id="chat-screen" class="screen active">
                 <div class="ai-chat-container">
                     <div class="ai-chat-header">
+                        <i class="fas fa-robot chat-icon"></i>
                         <h2 id="current-model-name">AI Assistant</h2>
                     </div>
                     <div class="ai-chat-messages" id="chat-messages">
@@ -141,33 +888,938 @@
                 </div>
             </div>
 
+            <!-- History Screen -->
             <div id="history-screen" class="screen">
                 <h2>Conversation History</h2>
-                <button class="btn btn-secondary" id="clear-history">Clear History</button>
+                <div class="history-actions mb-20">
+                    <button class="btn btn-secondary" id="clear-history"><i class="fas fa-trash"></i> Clear History</button>
+                    <button class="btn btn-warning" id="export-history"><i class="fas fa-download"></i> Export History</button>
+                </div>
                 <div id="history-content"></div>
             </div>
 
+            <!-- Account Screen -->
             <div id="account-screen" class="screen">
                 <div id="account-container">
-                    <h2>Account Settings</h2>
-                    <input type="text" id="account-name" readonly>
-                    <input type="email" id="account-email" readonly>
-                    <input type="password" id="account-password" value="••••••••" readonly>
-                    <button class="btn logout-btn" id="logout-btn">Logout</button>
+                    <h2><i class="fas fa-user-cog"></i> Account Settings</h2>
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> Full Name</label>
+                        <input type="text" id="account-name" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="account-email" readonly>
+                    </div>
+                    <div class="form-group password-wrapper">
+                        <label><i class="fas fa-lock"></i> Password</label>
+                        <input type="password" id="account-password" value="••••••••" readonly>
+                        <i class="fas fa-eye password-toggle" id="toggle-password"></i>
+                    </div>
+                    
+                    <h3 class="mt-20"><i class="fas fa-history"></i> Login History</h3>
+                    <div id="login-history">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-calendar"></i> Date</th>
+                                    <th><i class="fas fa-clock"></i> Time</th>
+                                    <th><i class="fas fa-network-wired"></i> IP Address</th>
+                                </tr>
+                            </thead>
+                            <tbody id="login-history-list">
+                                <!-- Login history will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <button class="btn logout-btn" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    <button class="btn btn-secondary mt-20" id="back-to-chat"><i class="fas fa-arrow-left"></i> Back to Chat</button>
                 </div>
             </div>
         </main>
     </div>
 
+    <!-- Admin Panel -->
     <div class="admin-panel hidden" id="admin-panel">
-        <h2>Admin Panel</h2>
-        <div class="stat-card"><h3>Total Users</h3><p id="total-users">0</p></div>
-        <div class="stat-card"><h3>AI Requests</h3><p id="total-requests">0</p></div>
-        <input type="text" id="user-search" placeholder="Search user...">
-        <table><tbody id="user-table-body"></tbody></table>
-        <button class="btn" id="back-to-ai">Back to AI</button>
+        <h2><i class="fas fa-users-cog"></i> Admin Panel</h2>
+        <div class="admin-content">
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <i class="fas fa-users"></i>
+                    <h3>Total Users</h3>
+                    <p id="total-users">0</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-robot"></i>
+                    <h3>AI Requests</h3>
+                    <p id="total-requests">0</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-database"></i>
+                    <h3>Storage Used</h3>
+                    <p id="storage-used">0 KB</p>
+                </div>
+            </div>
+            
+            <div class="user-management mt-20">
+                <h3><i class="fas fa-user-cog"></i> User Management</h3>
+                <div class="form-group">
+                    <label><i class="fas fa-search"></i> Search User</label>
+                    <input type="text" id="user-search" placeholder="Type to search...">
+                </div>
+                <div class="user-list">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-user"></i> Name</th>
+                                <th><i class="fas fa-envelope"></i> Email</th>
+                                <th><i class="fas fa-shield-alt"></i> Role</th>
+                            </tr>
+                        </thead>
+                        <tbody id="user-table-body">
+                            <!-- Users will be listed here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="system-settings mt-20">
+                <h3><i class="fas fa-cog"></i> System Settings</h3>
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label><i class="fas fa-key"></i> API Key</label>
+                        <input type="password" id="api-key" value="••••••••••••••••">
+                        <button class="btn btn-secondary mt-10" id="show-api-key"><i class="fas fa-eye"></i> Show Key</button>
+                    </div>
+                    <button class="btn btn-danger" id="reset-system"><i class="fas fa-exclamation-triangle"></i> Reset System</button>
+                </div>
+            </div>
+            
+            <button class="btn mt-20" id="back-to-ai"><i class="fas fa-arrow-left"></i> Back to AI</button>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- User Detail Modal -->
+    <div class="user-detail-modal" id="user-detail-modal">
+        <div class="user-detail-content">
+            <span class="close-modal" id="close-modal">&times;</span>
+            <h3><i class="fas fa-user"></i> User Details</h3>
+            <div class="form-group">
+                <label><i class="fas fa-user"></i> Name</label>
+                <input type="text" id="detail-name" readonly>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-envelope"></i> Email</label>
+                <input type="email" id="detail-email" readonly>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-lock"></i> Password</label>
+                <input type="text" id="detail-password" readonly>
+            </div>
+            <div class="form-group">
+                <label><i class="fas fa-shield-alt"></i> Role</label>
+                <input type="text" id="detail-role" readonly>
+            </div>
+            <div class="user-detail-actions">
+                <button class="btn btn-secondary" id="make-admin-btn"><i class="fas fa-user-shield"></i> Make Admin</button>
+                <button class="btn btn-danger" id="delete-user-btn"><i class="fas fa-trash"></i> Delete User</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== CONFIGURATION ==========
+        const API_KEYS = {
+            'gemini-flash': 'AIzaSyC06c5Z2J2jLTFKFsLLsdlBMCS35DagoDc',
+            'gemini-pro': 'YOUR_GEMINI_PRO_KEY',
+            'gpt-3': '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'
+        };
+        
+        const API_URLS = {
+            'gemini-flash': 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+            'gemini-pro': 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent',
+            'gpt-3': 'https://api.openai.com/v1/chat/completions'
+        };
+        
+        const MODEL_NAMES = {
+            'gemini-flash': 'Gemini 2.0 Flash',
+            'gemini-pro': 'Gemini 1.5 Pro',
+            'gpt-3': 'GPT-3.5'
+        };
+
+        // ========== STATE MANAGEMENT ==========
+        let users = JSON.parse(localStorage.getItem('users')) || [
+            {
+                name: "Admin User",
+                email: "bloxaryn@gmail.com",
+                password: "ratohjaroe",
+                isAdmin: true,
+                joinDate: new Date().toLocaleDateString(),
+                loginHistory: [],
+                chatHistory: [],
+                totalRequests: 0
+            }
+        ];
+        
+        let currentUser = null;
+        let aiRequests = parseInt(localStorage.getItem('aiRequests')) || 0;
+        let currentModel = localStorage.getItem('currentModel') || 'gemini-flash';
+        let conversationHistory = JSON.parse(localStorage.getItem('conversationHistory')) || [];
+        let loginHistory = JSON.parse(localStorage.getItem('loginHistory')) || [];
+        let selectedUserEmail = null;
+
+        // ========== DOM ELEMENTS ==========
+        const elements = {
+            // Auth elements
+            authContainer: document.getElementById('auth-container'),
+            loginForm: document.getElementById('loginForm'),
+            registerForm: document.getElementById('registerForm'),
+            showRegister: document.getElementById('show-register'),
+            showLogin: document.getElementById('show-login'),
+            loginFormContainer: document.getElementById('login-form'),
+            registerFormContainer: document.getElementById('register-form'),
+            
+            // Main app elements
+            aiContainer: document.getElementById('ai-container'),
+            hamburgerBtn: document.getElementById('hamburger-btn'),
+            closeSidebar: document.getElementById('close-sidebar'),
+            sidebar: document.getElementById('sidebar'),
+            themeToggle: document.getElementById('theme-toggle'),
+            logoutBtn: document.getElementById('logout-btn'),
+            userEmailSpan: document.getElementById('user-email'),
+            
+            // Navigation links
+            homeLink: document.getElementById('home-link'),
+            chatsLink: document.getElementById('chats-link'),
+            aiModelsLink: document.getElementById('ai-models-link'),
+            historyLink: document.getElementById('history-link'),
+            accountLink: document.getElementById('account-link'),
+            adminPanelLink: document.getElementById('admin-panel-link'),
+            
+            // Chat elements
+            chatMessages: document.getElementById('chat-messages'),
+            userInput: document.getElementById('user-input'),
+            sendBtn: document.getElementById('send-btn'),
+            currentModelName: document.getElementById('current-model-name'),
+            modelSelect: document.getElementById('model-select'),
+            
+            // Screens
+            screens: {
+                home: document.getElementById('home-screen'),
+                models: document.getElementById('ai-models-screen'),
+                chat: document.getElementById('chat-screen'),
+                history: document.getElementById('history-screen'),
+                account: document.getElementById('account-screen')
+            },
+            
+            // Admin elements
+            adminPanel: document.getElementById('admin-panel'),
+            totalUsers: document.getElementById('total-users'),
+            totalRequests: document.getElementById('total-requests'),
+            storageUsed: document.getElementById('storage-used'),
+            userTableBody: document.getElementById('user-table-body'),
+            userSearch: document.getElementById('user-search'),
+            backToAi: document.getElementById('back-to-ai'),
+            apiKey: document.getElementById('api-key'),
+            showApiKey: document.getElementById('show-api-key'),
+            resetSystem: document.getElementById('reset-system'),
+            
+            // Account elements
+            accountName: document.getElementById('account-name'),
+            accountEmail: document.getElementById('account-email'),
+            accountPassword: document.getElementById('account-password'),
+            togglePassword: document.getElementById('toggle-password'),
+            backToChat: document.getElementById('back-to-chat'),
+            
+            // History elements
+            historyContent: document.getElementById('history-content'),
+            clearHistory: document.getElementById('clear-history'),
+            exportHistory: document.getElementById('export-history'),
+            loginHistoryList: document.getElementById('login-history-list'),
+            
+            // Stats elements
+            totalChats: document.getElementById('total-chats'),
+            userTotalRequests: document.getElementById('user-total-requests'),
+            
+            // Model selection
+            modelCards: document.querySelectorAll('.select-model'),
+            
+            // User detail modal
+            userDetailModal: document.getElementById('user-detail-modal'),
+            closeModal: document.getElementById('close-modal'),
+            detailName: document.getElementById('detail-name'),
+            detailEmail: document.getElementById('detail-email'),
+            detailPassword: document.getElementById('detail-password'),
+            detailRole: document.getElementById('detail-role'),
+            makeAdminBtn: document.getElementById('make-admin-btn'),
+            deleteUserBtn: document.getElementById('delete-user-btn')
+        };
+
+        // ========== INITIALIZATION ==========
+        function init() {
+            // Load saved state
+            loadSavedState();
+            
+            // Set up event listeners
+            setupEventListeners();
+            
+            // Initialize UI
+            updateUI();
+        }
+
+        function loadSavedState() {
+            // Load theme preference
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.body.className = savedTheme;
+                elements.themeToggle.checked = savedTheme === 'dark-mode';
+            }
+
+            // Load current model
+            currentModel = localStorage.getItem('currentModel') || 'gemini-flash';
+            elements.modelSelect.value = currentModel;
+            elements.currentModelName.textContent = `AI Assistant (${MODEL_NAMES[currentModel]})`;
+
+            // Check for logged in user
+            const loggedInUser = localStorage.getItem('currentUser');
+            if (loggedInUser) {
+                currentUser = JSON.parse(loggedInUser);
+                showAIInterface();
+            } else {
+                elements.authContainer.style.display = 'block';
+                elements.aiContainer.style.display = 'none';
+            }
+        }
+
+        function setupEventListeners() {
+            // Auth form toggles
+            elements.showRegister.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleAuthForms();
+            });
+
+            elements.showLogin.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleAuthForms(false);
+            });
+
+            // Form submissions
+            elements.loginForm.addEventListener('submit', handleLogin);
+            elements.registerForm.addEventListener('submit', handleRegister);
+
+            // Sidebar controls
+            elements.hamburgerBtn.addEventListener('click', () => elements.sidebar.classList.add('open'));
+            elements.closeSidebar.addEventListener('click', () => elements.sidebar.classList.remove('open'));
+
+            // Theme toggle
+            elements.themeToggle.addEventListener('change', toggleTheme);
+
+            // Logout
+            elements.logoutBtn.addEventListener('click', handleLogout);
+
+            // Navigation links
+            elements.homeLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showScreen('home');
+            });
+            elements.chatsLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showScreen('chat');
+            });
+            elements.aiModelsLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showScreen('models');
+            });
+            elements.historyLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showScreen('history');
+                renderHistory();
+            });
+            elements.accountLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showScreen('account');
+                renderAccount();
+            });
+            elements.adminPanelLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showAdminPanel();
+            });
+
+            // Chat controls
+            elements.sendBtn.addEventListener('click', sendMessage);
+            elements.userInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+
+            // Model selection
+            elements.modelSelect.addEventListener('change', (e) => {
+                currentModel = e.target.value;
+                localStorage.setItem('currentModel', currentModel);
+                elements.currentModelName.textContent = `AI Assistant (${MODEL_NAMES[currentModel]})`;
+            });
+
+            elements.modelCards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    currentModel = e.target.dataset.model;
+                    localStorage.setItem('currentModel', currentModel);
+                    elements.modelSelect.value = currentModel;
+                    elements.currentModelName.textContent = `AI Assistant (${MODEL_NAMES[currentModel]})`;
+                    showScreen('chat');
+                });
+            });
+
+            // Password visibility toggle
+            elements.togglePassword.addEventListener('click', togglePasswordVisibility);
+
+            // API key visibility toggle
+            elements.showApiKey.addEventListener('click', toggleApiKeyVisibility);
+
+            // History controls
+            elements.clearHistory.addEventListener('click', clearHistory);
+            elements.exportHistory.addEventListener('click', exportHistory);
+
+            // Back buttons
+            elements.backToChat.addEventListener('click', () => showScreen('chat'));
+            elements.backToAi.addEventListener('click', () => {
+                elements.adminPanel.classList.add('hidden');
+                elements.aiContainer.style.display = 'block';
+            });
+
+            // System controls
+            elements.resetSystem.addEventListener('click', resetSystem);
+
+            // User search
+            elements.userSearch.addEventListener('input', filterUsers);
+
+            // Modal controls
+            elements.closeModal.addEventListener('click', closeUserDetailModal);
+            elements.makeAdminBtn.addEventListener('click', makeSelectedUserAdmin);
+            elements.deleteUserBtn.addEventListener('click', deleteSelectedUser);
+
+            // Close modal when clicking outside
+            elements.userDetailModal.addEventListener('click', (e) => {
+                if (e.target === elements.userDetailModal) {
+                    closeUserDetailModal();
+                }
+            });
+        }
+
+        // ========== AUTHENTICATION FUNCTIONS ==========
+        function toggleAuthForms(showRegister = true) {
+            elements.loginFormContainer.classList.toggle('active', !showRegister);
+            elements.registerFormContainer.classList.toggle('active', showRegister);
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            const user = users.find(u => u.email === email && u.password === password);
+            if (!user) return alert('Invalid credentials');
+
+            currentUser = user;
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            logLogin();
+            showAIInterface();
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+
+            if (password !== confirmPassword) return alert('Passwords do not match');
+            if (users.some(u => u.email === email)) return alert('Email already registered');
+
+            const newUser = {
+                name,
+                email,
+                password,
+                isAdmin: false,
+                joinDate: new Date().toLocaleDateString(),
+                loginHistory: [],
+                chatHistory: [],
+                totalRequests: 0
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            currentUser = newUser;
+            localStorage.setItem('currentUser', JSON.stringify(newUser));
+            logLogin();
+            showAIInterface();
+            
+            // Switch back to login form for next time
+            toggleAuthForms(false);
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            elements.authContainer.style.display = 'block';
+            elements.aiContainer.style.display = 'none';
+            document.body.classList.remove('is-admin');
+            elements.adminPanel.classList.add('hidden');
+            closeUserDetailModal();
+        }
+
+        function logLogin() {
+            const loginEntry = {
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString(),
+                ip: generateFakeIP() // In a real app, you'd get this from the server
+            };
+            
+            if (currentUser) {
+                currentUser.loginHistory.unshift(loginEntry);
+                currentUser.loginHistory = currentUser.loginHistory.slice(0, 10);
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+            
+            loginHistory.unshift(loginEntry);
+            loginHistory = loginHistory.slice(0, 20);
+            localStorage.setItem('loginHistory', JSON.stringify(loginHistory));
+        }
+
+        function generateFakeIP() {
+            return `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+        }
+
+        // ========== UI FUNCTIONS ==========
+        function showAIInterface() {
+            elements.authContainer.style.display = 'none';
+            elements.aiContainer.style.display = 'block';
+            // Email removed from header display
+
+            if (currentUser.isAdmin) {
+                document.body.classList.add('is-admin');
+                updateAdminStats();
+            }
+
+            updateUserStats();
+            showScreen('chat');
+        }
+
+        function showScreen(screenName) {
+            // Hide all screens
+            Object.values(elements.screens).forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show the requested screen
+            elements.screens[screenName].classList.add('active');
+            
+            // Close sidebar on mobile
+            elements.sidebar.classList.remove('open');
+        }
+
+        function showAdminPanel() {
+            elements.aiContainer.style.display = 'none';
+            elements.adminPanel.classList.remove('hidden');
+            updateAdminStats();
+            renderUserTable();
+        }
+
+        function toggleTheme() {
+            const isDark = elements.themeToggle.checked;
+            document.body.className = isDark ? 'dark-mode' : 'light-mode';
+            localStorage.setItem('theme', isDark ? 'dark-mode' : 'light-mode');
+            
+            // Admin panel stays visible during theme change
+            if (currentUser?.isAdmin && !elements.adminPanel.classList.contains('hidden')) {
+                elements.adminPanel.classList.remove('hidden');
+            }
+        }
+
+        function togglePasswordVisibility() {
+            const passwordField = elements.accountPassword;
+            const icon = elements.togglePassword;
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                passwordField.value = currentUser.password;
+                icon.classList.replace('fa-eye', 'fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                passwordField.value = '••••••••';
+                icon.classList.replace('fa-eye-slash', 'fa-eye');
+            }
+        }
+
+        function toggleApiKeyVisibility() {
+            const apiKeyField = elements.apiKey;
+            const button = elements.showApiKey;
+            
+            if (apiKeyField.type === 'password') {
+                apiKeyField.type = 'text';
+                apiKeyField.value = API_KEYS[currentModel];
+                button.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Key';
+            } else {
+                apiKeyField.type = 'password';
+                apiKeyField.value = '••••••••••••••••';
+                button.innerHTML = '<i class="fas fa-eye"></i> Show Key';
+            }
+        }
+
+        function updateUI() {
+            if (currentUser) {
+                // Email removed from header display
+                updateUserStats();
+            }
+        }
+
+        function updateUserStats() {
+            if (!currentUser) return;
+            
+            elements.totalChats.textContent = currentUser.chatHistory.length;
+            elements.userTotalRequests.textContent = currentUser.totalRequests;
+        }
+
+        function updateAdminStats() {
+            elements.totalUsers.textContent = users.length;
+            elements.totalRequests.textContent = aiRequests;
+            
+            // Calculate storage used (simplified)
+            const storageUsed = Math.round(JSON.stringify(localStorage).length / 1024);
+            elements.storageUsed.textContent = `${storageUsed} KB`;
+        }
+
+        // ========== USER MANAGEMENT ==========
+        function renderUserTable(filter = '') {
+            elements.userTableBody.innerHTML = '';
+            const filteredUsers = users.filter(user => 
+                user.name.toLowerCase().includes(filter.toLowerCase()) ||
+                user.email.toLowerCase().includes(filter.toLowerCase())
+            );
+            
+            filteredUsers.forEach(user => {
+                const row = document.createElement('tr');
+                row.style.cursor = 'pointer';
+                row.innerHTML = `
+                    <td><strong>${user.name}</strong></td>
+                    <td>${user.email}</td>
+                    <td>${user.isAdmin ? '<span style="color: var(--primary-color)"><i class="fas fa-shield-alt"></i> Admin</span>' : '<span style="color: var(--secondary-color)"><i class="fas fa-user"></i> User</span>'}</td>
+                `;
+                
+                row.addEventListener('click', () => openUserDetailModal(user));
+                elements.userTableBody.appendChild(row);
+            });
+        }
+
+        function filterUsers() {
+            const searchTerm = elements.userSearch.value;
+            renderUserTable(searchTerm);
+        }
+
+        function openUserDetailModal(user) {
+            selectedUserEmail = user.email;
+            elements.detailName.value = user.name;
+            elements.detailEmail.value = user.email;
+            elements.detailPassword.value = user.password;
+            elements.detailRole.value = user.isAdmin ? 'Admin' : 'User';
+            
+            elements.makeAdminBtn.style.display = user.isAdmin ? 'none' : 'inline-flex';
+            
+            elements.userDetailModal.style.display = 'flex';
+        }
+
+        function closeUserDetailModal() {
+            elements.userDetailModal.style.display = 'none';
+            selectedUserEmail = null;
+        }
+
+        function makeSelectedUserAdmin() {
+            if (!selectedUserEmail || selectedUserEmail === currentUser.email) {
+                alert('Cannot change admin status');
+                return;
+            }
+            
+            const user = users.find(u => u.email === selectedUserEmail);
+            if (user) {
+                user.isAdmin = true;
+                localStorage.setItem('users', JSON.stringify(users));
+                updateAdminStats();
+                renderUserTable(elements.userSearch.value);
+                closeUserDetailModal();
+                alert(`${user.name} is now an admin`);
+            }
+        }
+
+        function deleteSelectedUser() {
+            if (!selectedUserEmail || selectedUserEmail === currentUser.email) {
+                alert('Cannot delete yourself');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to delete this user?')) {
+                users = users.filter(u => u.email !== selectedUserEmail);
+                localStorage.setItem('users', JSON.stringify(users));
+                updateAdminStats();
+                renderUserTable(elements.userSearch.value);
+                closeUserDetailModal();
+                alert('User deleted successfully');
+            }
+        }
+
+        // ========== CHAT FUNCTIONS ==========
+        async function sendMessage() {
+            const message = elements.userInput.value.trim();
+            if (!message) return;
+
+            // Add user message to chat
+            addMessage(message, 'user');
+            elements.userInput.value = '';
+            
+            // Show loading indicator
+            const loadingId = 'loading-' + Date.now();
+            addMessage('<div class="spinner"></div>', 'ai', loadingId);
+            
+            try {
+                let aiResponse;
+                
+                if (currentModel.startsWith('gemini')) {
+                    // Call Gemini API
+                    const response = await fetch(`${API_URLS[currentModel]}?key=${API_KEYS[currentModel]}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [{ text: message }]
+                            }]
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    aiResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text || "This feature is coming.";
+                } else if (currentModel === 'gpt-3') {
+                    // Call OpenAI API (mock implementation)
+                    aiResponse = "Sorry, the AI Assistant (GPT-3.5) feature is currently unavailable.";
+                }
+                
+                // Remove loading indicator and add AI response
+                removeLoadingIndicator(loadingId);
+                addMessage(aiResponse, 'ai');
+                
+                // Save to conversation history
+                const timestamp = new Date().toLocaleString();
+                conversationHistory.push({
+                    from: 'user',
+                    text: message,
+                    time: timestamp,
+                    model: currentModel
+                });
+                conversationHistory.push({
+                    from: 'ai',
+                    text: aiResponse,
+                    time: timestamp,
+                    model: currentModel
+                });
+                
+                // Save to user's personal history
+                if (currentUser) {
+                    currentUser.chatHistory.push({
+                        question: message,
+                        answer: aiResponse,
+                        time: timestamp,
+                        model: currentModel
+                    });
+                    currentUser.totalRequests++;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
+                
+                localStorage.setItem('conversationHistory', JSON.stringify(conversationHistory));
+                
+                // Update stats
+                aiRequests++;
+                localStorage.setItem('aiRequests', aiRequests);
+                
+                if (currentUser) {
+                    updateUserStats();
+                }
+                if (currentUser?.isAdmin) {
+                    updateAdminStats();
+                }
+                
+            } catch (error) {
+                removeLoadingIndicator(loadingId);
+                addMessage("Sorry, the feature for AI Assistant (Gemini 1.5 Pro) is not available yet, Coming soon😼.", 'ai');
+                console.error('Error calling AI API:', error);
+            }
+        }
+
+        function addMessage(text, sender, id = null) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', `${sender}-message`);
+            
+            if (id) {
+                messageDiv.id = id;
+            }
+            
+            if (typeof text === 'string' && text.includes('spinner')) {
+                messageDiv.innerHTML = text;
+            } else {
+                messageDiv.textContent = text;
+            }
+            
+            elements.chatMessages.appendChild(messageDiv);
+            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+        }
+
+        function removeLoadingIndicator(id) {
+            const loadingElement = document.getElementById(id);
+            if (loadingElement) {
+                loadingElement.remove();
+            }
+        }
+
+        // ========== HISTORY FUNCTIONS ==========
+        function renderHistory() {
+            elements.historyContent.innerHTML = '';
+            
+            if (conversationHistory.length === 0) {
+                elements.historyContent.innerHTML = '<p>No conversation history yet.</p>';
+                return;
+            }
+            
+            // Group conversations by session
+            const sessions = [];
+            let currentSession = [];
+            
+            for (let i = 0; i < conversationHistory.length; i++) {
+                const msg = conversationHistory[i];
+                
+                if (msg.from === 'user') {
+                    if (currentSession.length > 0) {
+                        sessions.push(currentSession);
+                    }
+                    currentSession = [msg];
+                } else {
+                    if (currentSession.length > 0) {
+                        currentSession.push(msg);
+                    }
+                }
+            }
+            
+            if (currentSession.length > 0) {
+                sessions.push(currentSession);
+            }
+            
+            // Display sessions
+            sessions.forEach(session => {
+                const sessionDiv = document.createElement('div');
+                sessionDiv.className = 'history-item';
+                
+                const sessionHeader = document.createElement('div');
+                sessionHeader.className = 'session-header';
+                sessionHeader.innerHTML = `
+                    <small><i class="fas fa-calendar"></i> ${session[0].time} • <i class="fas fa-robot"></i> ${MODEL_NAMES[session[0].model] || 'Unknown Model'}</small>
+                    <div class="session-actions">
+                        <button class="btn btn-sm btn-secondary copy-session" data-session="${encodeURIComponent(JSON.stringify(session))}"><i class="fas fa-copy"></i> Copy</button>
+                    </div>
+                `;
+                
+                const sessionContent = document.createElement('div');
+                sessionContent.className = 'session-content';
+                
+                session.forEach(msg => {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.classList.add('message', `${msg.from}-message`);
+                    msgDiv.textContent = msg.text;
+                    sessionContent.appendChild(msgDiv);
+                });
+                
+                sessionDiv.appendChild(sessionHeader);
+                sessionDiv.appendChild(sessionContent);
+                elements.historyContent.appendChild(sessionDiv);
+            });
+            
+            // Add event listeners to copy buttons
+            document.querySelectorAll('.copy-session').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const session = JSON.parse(decodeURIComponent(e.target.dataset.session));
+                    const textToCopy = session.map(msg => `${msg.from}: ${msg.text}`).join('\n\n');
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        alert('Conversation copied to clipboard!');
+                    });
+                });
+            });
+        }
+
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear your conversation history?')) {
+                conversationHistory = [];
+                localStorage.setItem('conversationHistory', JSON.stringify(conversationHistory));
+                
+                if (currentUser) {
+                    currentUser.chatHistory = [];
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
+                
+                renderHistory();
+            }
+        }
+
+        function exportHistory() {
+            const dataStr = JSON.stringify(conversationHistory, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+            
+            const exportName = `ai-chat-history-${new Date().toISOString().slice(0, 10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportName);
+            linkElement.click();
+        }
+
+        // ========== ACCOUNT FUNCTIONS ==========
+        function renderAccount() {
+            if (!currentUser) return;
+            
+            elements.accountName.value = currentUser.name;
+            elements.accountEmail.value = currentUser.email;
+            elements.accountPassword.value = '••••••••';
+            elements.accountPassword.type = 'password';
+            elements.togglePassword.className = 'fas fa-eye password-toggle';
+            
+            // Render login history
+            renderLoginHistory();
+        }
+
+        function renderLoginHistory() {
+            elements.loginHistoryList.innerHTML = '';
+            
+            const historyToShow = currentUser ? currentUser.loginHistory : loginHistory;
+            
+            if (historyToShow.length === 0) {
+                elements.loginHistoryList.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px;">No login history available</td></tr>';
+                return;
+            }
+            
+            historyToShow.slice(0, 10).forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><i class="fas fa-calendar"></i> ${entry.date}</td>
+                    <td><i class="fas fa-clock"></i> ${entry.time}</td>
+                    <td><i class="fas fa-network-wired"></i> ${entry.ip}</td>
+                `;
+                elements.loginHistoryList.appendChild(row);
+            });
+        }
+
+        // ========== ADMIN FUNCTIONS ==========
+        function resetSystem() {
+            if (confirm('WARNING: This will reset all system data. Are you sure?')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // Initialize the application
+        init();
+    </script>
 </body>
 </html>
