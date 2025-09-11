@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZarynAI</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">       
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
     <style>
         :root {
-            --primary-color: #4285f4;
+            --primary-color: #5a95f5;
             --secondary-color: #34a853;
             --danger-color: #ea4335;
             --warning-color: #fbbc05;
@@ -19,11 +19,22 @@
             --sidebar-bg: #2c3e50;
             --sidebar-text: #ecf0f1;
             --user-bubble: #4285f4;
-            --ai-bubble: #f1f1f1;
             --code-bg: #282c34;
             --code-text: #abb2bf;
             --custom-color-1: #8e44ad;
             --custom-color-2: #e74c3c;
+            --primary: #5a95f5;
+            --primary-light: #4895ef;
+            --secondary: #5a95f5;
+            --dark: #121212;            
+            --light: #f5f5f5;
+            --success: #78f0f0;
+            --danger: #f9535d;
+            --warning: #f8961e;
+            --card-bg: #ffffff;
+            --text: #2b2d42;
+            --text-light: #8d99ae;
+            --transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
         .dark-mode {
@@ -38,31 +49,43 @@
             --sidebar-bg: #1a1a1a;
             --sidebar-text: #e0e0e0;
             --user-bubble: #5a95f5;
-            --ai-bubble: #2d2d2d;
             --code-bg: #1e1e1e;
             --code-text: #d4d4d4;
             --custom-color-1: #9b59b6;
             --custom-color-2: #e67e22;
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --dark: #121212;
+            --light: #121212;            
+            --card-bg: #1a1a2e;
+            --sidebar-bg: #1a1a1a;
+            --text: #e2e2e2;
+            --text-light: #b8b8b8;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s, color 0.3s;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
             font-family: 'Arial', sans-serif;
-            background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
+            background-color: var(--light);
+            color: var(--text);
+            transition: var(--transition);
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .auth-forms {
@@ -121,19 +144,46 @@
         }
 
         .btn {
-            background-color: var(--primary-color);
+            background-color: var(--primary);
             color: white;
+            transition: var(--transition);
             border: none;
-            padding: 12px;
-            border-radius: 4px;
+            padding: 12px 25px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 1rem;
             width: 100%;
-            font-weight: 500;
+            font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            display: inline-flex;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(67, 97, 238, 0.1);
         }
 
         .btn:hover {
@@ -145,7 +195,12 @@
         }
 
         .btn-danger {
-            background-color: var(--danger-color);
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d31665;
         }
 
         .btn-warning {
@@ -154,8 +209,8 @@
         }
 
         .btn-sm {
-            padding: 8px 12px;
-            font-size: 14px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
         }
 
         .toggle-form {
@@ -175,6 +230,93 @@
         /* AI Container */
         #ai-container {
             display: none;
+            flex: 1;
+        }
+        
+        .persona-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .persona-item {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: var(--transition);
+            border-top: 3px solid var(--primary-light);
+        }
+
+        .persona-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .persona-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .persona-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+
+        .persona-name {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .persona-description {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .persona-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .active-badge {
+            background: var(--success);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 65%;
+            }
+
+            .main-content.active {
+                margin-left: 0;
+            }
+
+            .persona-list {
+                grid-template-columns: 5fr;
+            }
+
+            .chat-messages {
+                height: 500px;
+            }
         }
 
         .ai-chat-container {
@@ -182,6 +324,9 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            hight: 90vh;
         }
 
         .ai-chat-header {
@@ -198,9 +343,10 @@
         }
 
         .ai-chat-messages {
-            height: 500px;
-            overflow-y: auto;
             padding: 20px;
+            height: 100px;
+            overflow-y: auto;
+            max-height: none;
         }
 
         .message {
@@ -218,21 +364,22 @@
             margin-left: auto;
             border-bottom-right-radius: 4px;
         }
+        
         .ai-message-plain {
-    margin: 10px 0;
-    padding: 10px 15px;
-    color: var(--text-color);
-    max-width: 100%;
-    word-wrap: break-word;
-    background: none !important;
-    border: none !important;
-    border-radius: 0 !important;
-    line-height: 1.5;
-    white-space: pre-line;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-}
+            margin: 10px 0;
+            padding: 10px 15px;
+            color: var(--text-color);
+            max-width: 100%;
+            word-wrap: break-word;
+            background: none !important;
+            border: none !important;
+            border-radius: 0 !important;
+            line-height: 1.5;
+            white-space: pre-line;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
         
         .ai-chat-input {
             display: flex;
@@ -263,6 +410,7 @@
             gap: 8px;
             margin: 15px 0;
         }
+
         .lang-card {
             background: var(--card-color);
             border: 1px solid var(--border-color);
@@ -273,6 +421,7 @@
             font-size: 13px;
             transition: .2s;
         }
+
         .lang-card:hover {
             border-color: var(--primary-color);
             background: var(--primary-color);
@@ -310,14 +459,162 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0; }
         }
+        
+        .hamburger {
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+            margin-right: 20px;
+            transition: var(--transition);
+        }
 
-        header {
+        .hamburger:hover {
+            transform: rotate(90deg);
+        }
+
+        .logo {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .logo-icon {
+            margin-right: 10px;
+            font-size: 1.4rem;
+        }
+        
+/* Hamburger Animation */
+.hamburger-box {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+
+.hamburger-inner {
+    display: block;
+    top: 50%;
+    margin-top: -2px;
+}
+
+.hamburger-inner,
+.hamburger-inner::before,
+.hamburger-inner::after {
+    width: 24px;
+    height: 2px;
+    background-color: var(--text-color);
+    position: absolute;
+    transition-property: transform;
+    transition-duration: 0.3s;
+    transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+}
+
+.hamburger-inner::before,
+.hamburger-inner::after {
+    content: "";
+    display: block;
+}
+
+.hamburger-inner::before {
+    top: -8px;
+    transition: top 0.1s 0.25s ease-in, opacity 0.1s ease-in;
+}
+
+.hamburger-inner::after {
+    bottom: -8px;
+    transition: bottom 0.1s 0.25s ease-in, transform 0.1s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+}
+
+.sidebar.open .hamburger-inner {
+    transform: rotate(45deg);
+    transition-delay: 0.12s;
+    transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.sidebar.open .hamburger-inner::before {
+    top: 0;
+    opacity: 0;
+    transition: top 0.1s ease-out, opacity 0.1s 0.12s ease-out;
+}
+
+.sidebar.open .hamburger-inner::after {
+    bottom: 0;
+    transform: rotate(-90deg);
+    transition: bottom 0.1s ease-out, transform 0.1s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+/* Button Animations */
+.btn {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.btn:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255,255,255,0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+}
+
+.btn:focus:not(:active)::after {
+    animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(20, 20);
+        opacity: 0;
+    }
+}
+
+/* Language Bubble */
+.language-bubble {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--primary-color);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.language-bubble.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--card-bg);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 1000;
         }
 
         .header-left {
@@ -345,18 +642,84 @@
             position: fixed;
             top: 0;
             left: -300px;
-            width: 280px;
-            height: 100vh;
+            width: 250px;
+            height: calc(100vh - 60px);
             background-color: var(--sidebar-bg);
             color: var(--sidebar-text);
-            transition: left 0.3s;
-            z-index: 1000;
+            transition: left 0.9s;
+            z-index: 900;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
+        }
+        
+        .sidebar.active {
+            transform: translateX(0);
         }
 
         .sidebar.open {
             left: 0;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 20px 0;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        
+        .menu-item {
+            margin-bottom: 5px;
+        }
+        
+        .menu-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--light);
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .menu-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .menu-link.active {
+            background: var(--primary);
+        }
+
+        .menu-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--light);
+        }
+
+        .menu-icon {
+            font-size: 1.1rem;
+            margin-right: 15px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-menu li {
+            padding: 10px 20px;
+        }
+
+        .sidebar-menu li:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-menu a {
+            color: var(--sidebar-text);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
         }
 
         .sidebar-header {
@@ -383,31 +746,22 @@
             cursor: pointer;
         }
 
-        .sidebar-menu {
-            list-style: none;
-            padding: 20px 0;
-            flex-grow: 1;
-            overflow-y: auto;
-        }
-
-        .sidebar-menu li {
-            padding: 10px 20px;
-        }
-
-        .sidebar-menu li:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .sidebar-menu a {
-            color: var(--sidebar-text);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-
         .sidebar-footer {
             padding: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .main-content {
+            margin-left: 0;
+            padding: 80px 30px 30px;
+            transition: var(--transition);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-content.active {
+            margin-left: 250px;
         }
 
         .theme-toggle {
@@ -476,7 +830,7 @@
         .ai-chat-container {
             background-color: var(--card-color);
             border-radius: 8px;
-            box-shadow: 0 2px 4px var(--shadow-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             overflow: hidden;
         }
 
@@ -491,12 +845,6 @@
 
         .chat-icon {
             font-size: 24px;
-        }
-
-        .ai-chat-messages {
-            height: 500px;
-            overflow-y: auto;
-            padding: 20px;
         }
 
         .message {
@@ -544,13 +892,13 @@
 }
 
 #code-editor {
-    min-height: 200px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 12px;
-    font-family: 'Courier New', monospace;
-    resize: vertical;
-}
+            min-height: 200px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+        }
 
 .code-actions {
     display: flex;
@@ -647,10 +995,13 @@
         /* Screens */
         .screen {
             display: none;
+            animation: fadeIn 0.5s ease;
+            flex: 1;
         }
 
         .screen.active {
-            display: block;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Account Page */
@@ -1097,12 +1448,6 @@
             font-size: 12px;
             opacity: 0.7;
         }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 250px;
-            }
-        }
         
         .loading-spinner {
             display: inline-block;
@@ -1128,12 +1473,12 @@
         
         /* Tambahkan di bagian CSS */
 .simplified-message {
-    margin-bottom: 20px; /* Tambahkan jeda 20px antar pesan */
-    padding: 10px 15px;
-    border-radius: 12px;
-    max-width: 80%;
-    word-wrap: break-word;
-}
+            margin-bottom: 20px;
+            padding: 10px 15px;
+            border-radius: 12px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
 
         
         .simplified-user-message {
@@ -1141,7 +1486,7 @@
             color: white;
             margin-left: auto;
             border-radius: 12px 12px 0 12px;
-            }
+        }
         
         /* Simplified chat header */
         .simplified-chat-header {
@@ -1198,76 +1543,149 @@
             background: var(--code-bg);
         }
 
-        /* 5. Prompt Library */
-        .prompt-library {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+        /* ===== Uiverse.io Switch ON/OFF ===== */
+        .ui-switch {
+            --switch-bg: rgb(135, 150, 165);
+            --switch-width: 48px;
+            --switch-height: 20px;
+            --circle-diameter: 32px;
+            --circle-bg: rgb(0, 56, 146);
+            --circle-inset: calc((var(--circle-diameter) - var(--switch-height)) / 2);
+            display: inline-block;
         }
 
-        /* 6. Meeting Notes */
-        .transcript-container {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
+        .ui-switch input {
+            display: none;
         }
 
-        /* 7. Document Analysis */
-        .document-uploader {
-            border: 2px dashed var(--border-color);
-            padding: 30px;
-            text-align: center;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-
-        /* 8. Custom Persona */
-        .persona-selector {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 15px 0;
-        }
-
-        /* 9. Theme Customizer */
-        .color-picker {
-            display: flex;
-            gap: 10px;
-            margin: 15px 0;
-        }
-
-        .color-option {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
+        .ui-switch .slider {
+            width: var(--switch-width);
+            height: var(--switch-height);
+            background: var(--switch-bg);
+            border-radius: 999px;
+            position: relative;
             cursor: pointer;
         }
 
-        /* 10. Keyboard Shortcuts Help */
-        .shortcuts-modal {
-            position: fixed;
-            top: 0;
+        .ui-switch .slider .circle {
+            top: calc(var(--circle-inset) * -1);
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
+            width: var(--circle-diameter);
+            height: var(--circle-diameter);
+            position: absolute;
+            background: var(--circle-bg);
+            border-radius: 50%;
+            background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj4KICAgIDxwYXRoIGZpbGw9IiNmZmYiCiAgICAgICAgZD0iTTkuMzA1IDEuNjY3VjMuNzVoMS4zODlWMS42NjdoLTEuMzl6bS00LjcwNyAxLjk1bC0uOTgyLjk4Mkw1LjA5IDYuMDcybC45ODItLjk4Mi0xLjQ3My0xLjQ3M3ptMTAuODAyIDBMMTMuOTI3IDUuMDlsLjk4Mi45ODIgMS40NzMtMS40NzMtLjk4Mi0uOTgyek0xMCA1LjEzOWE0Ljg3MiA0Ljg3MiAwIDAwLTQuODYyIDQuODZBNC44NzIgNC44NzIgMCAwMDEwIDE0Ljg2MiA0Ljg3MiA0Ljg3MiAwIDAwMTQuODYgMTAgNC44NzIgNC44NzIgMCAwMDEwIDUuMTM5em0wIDEuMzg5QTMuNDYyIDMuNDYyIDAgMDExMy40NzEgMTBhMy40NjIgMy40NjIgMCAwMS0zLjQ3MyAzLjQ3MkEzLjQ2MiAzLjQ2MiAwIDAxNi41MjcgMTAgMy40NjIgMy40NjIgMCAwMTEwIDYuNTI4ek0xLjY2NSA5LjMwNXYxLjM5aDIuMDgzdi0xLjM5SDEuNjY2em0xNC41ODMgMHYxLjM5aDIuMDg0di0xLjM5aC0yLjA4NHpNNS4wOSAxMy45MjhMMy42MTYgMTUuNGwuOTgyLjk4MiAxLjQ3My0xLjQ3My0uOTgyLS45ODJ6bTkuODIwMGwtLjk4Mi45ODIgMS40NzMgMS40NzMuOTgyLS45ODItMS40NzMtMS40NzN6TTkuMzA1IDE2LjI1djIuMDgzaDEuMzg5VjE2LjI1aC0xLjM5eiIgLz4KPC9zdmc+");
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: left 150ms cubic-bezier(0.4, 0, 0.2, 1), transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 1px 3px 0px rgba(0,0,0,0.12);
         }
 
-        /* ========== RESPONSIVE ========== */
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 250px;
-            }
-            
-            .prompt-library {
-                grid-template-columns: 1fr;
-            }
+        .ui-switch input:checked + .slider .circle {
+            left: calc(100% - var(--circle-diameter));
+            background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGhlaWdodD0iMjAiIHdpZHRoPSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj4KICAgIDxwYXRoIGZpbGw9IiNmZmYiCiAgICAgICAgZD0iTTQuMiAyLjVsLS43IDEuOC0xLjguNyAxLjguNy43IDEuOC42LTEuOEw2LjcgNWwtMS45LS43LS42LTEuOHptMTUgOC4zYTYuNyA2LjcgMCAxMS02LjYtNi42IDUuOCA1LjggMCAwMDYuNiA2LjZ6IiAvPgo8L3N2Zz4=");
+        }
+        
+        .home-screen {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .welcome-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            text-align: center;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .welcome-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .current-persona {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            border-top: 3px solid var(--primary);
+        }
+
+        .persona-badge {
+            display: inline-block;
+            background: var(--primary-light);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        /* Persona Screen */
+        .persona-screen {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .section-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-right: 15px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: var(--card-bg);
+            color: var(--text);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            outline: none;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
         }
         
         /* Admin User Table */
@@ -1336,7 +1754,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 2000;
     display: none;
 }
 
@@ -1389,7 +1807,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0,0,0,0.7);
     display: none;
     justify-content: center;
     align-items: center;
@@ -1400,16 +1818,15 @@
     background-color: var(--card-color);
     padding: 25px;
     border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     width: 90%;
     max-width: 500px;
-    animation: modalFadeIn 0.3s ease-out;
 }
 
-@keyframes modalFadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+      @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
 .user-info-title {
     color: var(--primary-color);
@@ -1436,9 +1853,9 @@
 }
 
 .role-badge {
-    padding: 5px 12px;
-    border-radius: 15px;
-    font-size: 13px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
     font-weight: 500;
 }
 
@@ -1462,12 +1879,6 @@
 .user-info-actions .btn {
     flex: 1;
     min-width: 120px;
-    padding: 10px;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
 }
 
 .password-toggle-btn {
@@ -1480,100 +1891,162 @@
 }
 
 /* Three-dot menu styles */
+/* ---------- Action Menu ---------- */
 .action-menu {
-    position: relative;
-    display: inline-block;
+  position: relative;
+  display: inline-block;
 }
 
 .action-menu-btn {
-    background: none;
-    border: none;
-    color: var(--text-color);
-    cursor: pointer;
-    font-size: 18px;
-    padding: 5px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.action-menu-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .action-menu-content {
-    display: none;
-    position: absolute;
-    right: 0;
-    background-color: var(--card-color);
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-}
-
-.action-menu-content a {
-    color: var(--text-color);
-    padding: 8px 12px;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.action-menu-content a:hover {
-    background-color: rgba(0,0,0,0.05);
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: var(--card-color);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  min-width: 150px;
 }
 
 .action-menu:hover .action-menu-content {
-    display: block;
+  display: block;
+}
+
+.action-menu-content a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.action-menu-content a:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.action-menu-content i {
+  width: 16px;
 }
 
 /* Table header with icons */
 .table-header-icon {
     margin-right: 8px;
 }
+
+/* Loading animation */
+.typing-indicator {
+    display: flex;
+    padding: 10px 15px;
+    border-radius: 18px;
+    max-width: 80%;
+    margin-bottom: 15px;
+}
+
+.typing-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--text-color);
+    border-radius: 50%;
+    margin: 0 2px;
+    animation: typingAnimation 1.4s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typingAnimation {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-5px); }
+}
+
+/* Full screen chat */
+.full-screen-chat {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    background-color: var(--bg-color);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Word by word animation */
+.word-by-word {
+    display: inline;
+}
+
+.word {
+    opacity: 0;
+    animation: fadeInWord 0.1s forwards;
+}
+
+@keyframes fadeInWord {
+    to { opacity: 1; }
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
     </style>
 </head>
 <body class="light-mode">
-    <!-- Authentication Container -->
+    <!-- Auth -->
     <div class="container" id="auth-container">
         <div class="auth-forms">
             <div class="form-container active" id="login-form">
                 <h2>Login</h2>
                 <form id="loginForm">
-                    <div class="form-group">
-                        <i class="fas fa-envelope icon"></i>
-                        <input type="email" id="login-email" placeholder="Email" required>
-                    </div>
-                    <div class="form-group">
-                        <i class="fas fa-lock icon"></i>
-                        <input type="password" id="login-password" placeholder="Password" required>
-                    </div>
+                    <div class="form-group"><i class="fas fa-envelope icon"></i><input type="email" id="login-email" placeholder="Email" required></div>
+                    <div class="form-group"><i class="fas fa-lock icon"></i><input type="password" id="login-password" placeholder="Password" required></div>
                     <button type="submit" class="btn"><i class="fas fa-sign-in-alt"></i> Login</button>
                 </form>
                 <p class="toggle-form">Don't have an account? <a href="#" id="show-register">Register</a></p>
             </div>
-
             <div class="form-container" id="register-form">
                 <h2>Register</h2>
                 <form id="registerForm">
-                    <div class="form-group">
-                        <i class="fas fa-user icon"></i>
-                        <input type="text" id="register-name" placeholder="Full Name" required>
-                    </div>
-                    <div class="form-group">
-                        <i class="fas fa-envelope icon"></i>
-                        <input type="email" id="register-email" placeholder="Email" required>
-                    </div>
-                    <div class="form-group">
-                        <i class="fas fa-lock icon"></i>
-                        <input type="password" id="register-password" placeholder="Password" required>
-                    </div>
-                    <div class="form-group">
-                        <i class="fas fa-lock icon"></i>
-                        <input type="password" id="register-confirm-password" placeholder="Confirm Password" required>
-                    </div>
+                    <div class="form-group"><i class="fas fa-user icon"></i><input type="text" id="register-name" placeholder="Full Name" required></div>
+                    <div class="form-group"><i class="fas fa-envelope icon"></i><input type="email" id="register-email" placeholder="Email" required></div>
+                    <div class="form-group"><i class="fas fa-lock icon"></i><input type="password" id="register-password" placeholder="Password" required></div>
+                    <div class="form-group"><i class="fas fa-lock icon"></i><input type="password" id="register-confirm-password" placeholder="Confirm Password" required></div>
                     <button type="submit" class="btn"><i class="fas fa-user-plus"></i> Register</button>
                 </form>
                 <p class="toggle-form">Already have an account? <a href="#" id="show-login">Login</a></p>
             </div>
         </div>
     </div>
+   
 
     <!-- Main AI Container -->
     <div class="container" id="ai-container">
@@ -1583,9 +2056,6 @@
                     <i class="fas fa-bars"></i>
                 </button>
                 <h1>ZarynAI</h1>
-            </div>
-            <div class="header-right">
-                <!-- Email removed from header -->
             </div>
         </header>
 
@@ -1600,34 +2070,58 @@
                 <li><a href="#" id="home-link"><i class="fas fa-home sidebar-icon"></i> Home</a></li>
                 <li><a href="#" id="chats-link"><i class="fas fa-comments sidebar-icon"></i> Chats</a></li>
                 <li><a href="#" id="ai-models-link"><i class="fas fa-brain sidebar-icon"></i> AI Models</a></li>
-                <li><a href="#history-screen" id="history-link"><i class="fas fa-history sidebar-icon"></i> History</a></li>
+                <li><a href="#" id="history-link"><i class="fas fa-history sidebar-icon"></i> History</a></li>
                 <li><a href="#" id="account-link"><i class="fas fa-user sidebar-icon"></i> Account</a></li>
-                <li><a href="#" id="check-code-link"><i class="fas fa-code sidebar-icon"></i> Check Code</a></li>
-                
+                <li><a href="#" id="check-code-link"><i class="fas fa-code sidebar-icon"></i> Code Tools</a></li>
+                <li><a href="#" id="persona-link"><i class="fas fa-user-astronaut sidebar-icon"></i> Persona AI</a></li>
                 <li class="admin-only"><a href="#" id="admin-panel-link"><i class="fas fa-users-cog sidebar-icon"></i> Admin Panel</a></li>
             </ul>
             <div class="sidebar-footer">
                 <div class="theme-toggle">
                     <i class="fas fa-moon sidebar-icon"></i>
                     <span>Dark Mode</span>
-                    <label class="switch">
+                    <label class="ui-switch">
                         <input type="checkbox" id="theme-toggle">
-                        <span class="slider round"></span>
+                        <div class="slider">
+                            <div class="circle"></div>
+                        </div>
                     </label>
                 </div>
                 <div class="copyright">
                     <i class="fas fa-copyright sidebar-icon"></i>
-                    <span>2023 ZarynAI. All rights reserved.</span>
+                    <span>2025 ZarynAI. All rights reserved.</span>
                 </div>
             </div>
         </div>
-
+        
         <!-- Main Content Area -->
         <main>
             <!-- Home Screen -->
             <div id="home-screen" class="screen">
-                <h2>Welcome to ZarynAI</h2>
-                <p>This is your personal AI assistant. Use the navigation menu to explore different features.</p>
+                <div class="welcome-card">
+                    <div class="welcome-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h2>Welcome to ZarynAI</h2>
+                    <p>Select an AI persona that suits your needs for a more personalized experience.</p>
+                </div>
+                
+                <div class="current-persona">
+                    <h2>Currently Active Persona</h2>
+                    <div id="current-persona-display">
+                        <div class="persona-header">
+                            <div class="persona-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div>
+                                <h3 class="persona-name">Default Assistant</h3>
+                                <span class="persona-badge">Active</span>
+                            </div>
+                        </div>
+                        <p class="persona-description">Neutral and helpful AI assistant</p>
+                    </div>
+                </div>
+                
                 <div class="quick-stats mt-20">
                     <h3>Quick Stats</h3>
                     <div class="admin-stats">
@@ -1688,7 +2182,7 @@
                                 <img src="zarynicon.jpg" class="ai-avatar" alt="ZarynAI">
                                 <strong>ZarynAI</strong>
                             </div>
-                            <div class="multi-line-response">Hello! How can I assist you today?</div>
+                            <div>Hello! How can I assist you today?</div>
                         </div>
                     </div>
                     <div class="ai-chat-input">
@@ -1739,7 +2233,6 @@
                 <div class="code-actions">
                     <button class="btn btn-secondary" id="copy-code"><i class="fas fa-copy"></i> Copy</button>
                     <button class="btn btn-secondary" id="preview-code"><i class="fas fa-eye"></i> Preview</button>
-                    <button class="btn btn-secondary" id="full-preview-code"><i class="fas fa-expand"></i> Full Preview</button>
                 </div>
 
                 <div id="code-display" class="hidden">
@@ -1769,7 +2262,8 @@
                         <iframe class="preview-content" id="code-preview-frame"></iframe>
                     </div>
                 </div>
-            </div>
+                       </div>
+            
             
             <!-- History Screen -->
             <div id="history-screen" class="screen">
@@ -1785,6 +2279,52 @@
                 <h2>Previous Chats</h2>
                 <div id="previous-chats-list">
                     <!-- Chat sessions will be listed here -->
+                </div>
+            </div>
+            
+            <!-- AI Persona Screen -->
+            <div class="screen persona-screen" id="persona-screen">
+                <div class="section-title">
+                    <i class="fas fa-user-cog section-icon"></i>
+                    <h2>Create New Persona</h2>
+                </div>
+
+                <div class="card">
+                    <div class="form-group">
+                        <label class="form-label">Persona Name</label>
+                        <input type="text" class="form-control" id="persona-name" placeholder="e.g. Technical Expert">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <input type="text" class="form-control" id="persona-description" placeholder="Brief description">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Behavior Instructions</label>
+                        <textarea class="form-control" id="persona-instructions" placeholder="How the AI should behave..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Icon</label>
+                        <select class="form-control" id="persona-icon">
+                            <option value="fas fa-robot">Robot</option>
+                            <option value="fas fa-user-tie">Professional</option>
+                            <option value="fas fa-chalkboard-teacher">Teacher</option>
+                            <option value="fas fa-code">Developer</option>
+                            <option value="fas fa-flask">Scientist</option>
+                            <option value="fas fa-magic">Creative</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="save-persona">
+                        <i class="fas fa-save"></i> Save Persona
+                    </button>
+                </div>
+
+                <div class="section-title">
+                    <i class="fas fa-list section-icon"></i>
+                    <h2>Available Personas</h2>
+                </div>
+
+                <div class="persona-list" id="persona-list">
+                    <!-- Persona items will be added here by JavaScript -->
                 </div>
             </div>
 
@@ -1828,6 +2368,7 @@
             </div>
         </main>
     </div>
+    
 
     <!-- Admin Panel -->
     <div class="admin-panel hidden" id="admin-panel">
@@ -2009,7 +2550,31 @@
             'gemini-pro': 'Gemini 1.5 Pro',
             'gpt-3': 'GPT-4o'
         };
-
+        
+        const defaultPersonas = [
+            {
+                id: 'default',
+                name: 'Default Assistant',
+                description: 'Neutral and helpful AI assistant',
+                instructions: 'You are a helpful, neutral AI assistant. Provide clear and concise answers.',
+                icon: 'fas fa-robot'
+            },
+            {
+                id: 'professional',
+                name: 'Professional',
+                description: 'Formal business communication',
+                instructions: 'You are a professional business assistant. Use formal language and be concise.',
+                icon: 'fas fa-user-tie'
+            },
+            {
+                id: 'teacher',
+                name: 'Teacher',
+                description: 'Educational and explanatory',
+                instructions: 'You are a knowledgeable teacher. Explain concepts clearly with examples.',
+                icon: 'fas fa-chalkboard-teacher'
+            }
+        ];
+        
         // ========== STATE MANAGEMENT ==========
         let users = JSON.parse(localStorage.getItem('users')) || [
             {
@@ -2037,6 +2602,8 @@
         
         let messageQueue = [];
         let isTyping = false;
+        let personas = JSON.parse(localStorage.getItem('personas')) || defaultPersonas;
+        let currentPersonaId = localStorage.getItem('currentPersonaId') || 'default';
 
         // ========== DOM ELEMENTS ==========
         const elements = {
@@ -2066,6 +2633,7 @@
             accountLink: document.getElementById('account-link'),
             adminPanelLink: document.getElementById('admin-panel-link'),
             checkCodeLink: document.getElementById('check-code-link'),
+            personaLink: document.getElementById('persona-link'),
             
             // Chat elements
             chatMessages: document.getElementById('chat-messages'),
@@ -2082,7 +2650,8 @@
                 history: document.getElementById('history-screen'),
                 account: document.getElementById('account-screen'),
                 checkCode: document.getElementById('check-code-screen'),
-                previousChats: document.getElementById('previous-chats-screen')
+                previousChats: document.getElementById('previous-chats-screen'),
+                persona: document.getElementById('persona-screen')
             },
             
             // Admin elements
@@ -2135,7 +2704,6 @@
             fileUpload: document.getElementById('file-upload'),
             copyCodeBtn: document.getElementById('copy-code'),
             previewCodeBtn: document.getElementById('preview-code'),
-            fullPreviewCodeBtn: document.getElementById('full-preview-code'),
             codeDisplay: document.getElementById('code-display'),
             codeContent: document.getElementById('code-content'),
             codeLanguageLabel: document.getElementById('code-language-label'),
@@ -2145,32 +2713,79 @@
             codePreviewFrame: document.getElementById('code-preview-frame'),
             closePreviewBtn: document.getElementById('close-preview-btn'),
             langCards: document.querySelectorAll('.lang-card'),
+            
+            // Persona elements
+            currentPersonaDisplay: document.getElementById('current-persona-display'),
+            personaName: document.getElementById('persona-name'),
+            personaDescription: document.getElementById('persona-description'),
+            personaInstructions: document.getElementById('persona-instructions'),
+            personaIcon: document.getElementById('persona-icon'),
+            savePersonaBtn: document.getElementById('save-persona'),
+            personaList: document.getElementById('persona-list')
         };
 
         // ========== TEXT FORMATTING FUNCTIONS ==========
-        function applyTextFormatting(text) {
-            // Process bold text (**, __)
-            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            text = text.replace(/__(.*?)__/g, '<strong>$1</strong>');
-            
-            // Process italic text (*, _)
-            text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
-            text = text.replace(/_(.*?)_/g, '<em>$1</em>');
-            
-            // Process strikethrough text (~~)
-            text = text.replace(/~~(.*?)~~/g, '<del>$1</del>');
-            
-            // Process inline code (`)
-            text = text.replace(/`(.*?)`/g, '<code>$1</code>');
-            
-            // Process blockquotes (>)
-            text = text.replace(/^>\s*(.*$)/gm, '<blockquote>$1</blockquote>');
-            
-            // Process newlines
-            text = text.replace(/\n/g, '<br>');
-            
-            return text;
-        }
+        <!-- Ganti bagian applyTextFormatting() -->
+// Fungsi untuk menerapkan formatting tanpa menampilkan tanda markdown
+function applyTextFormatting(text) {
+    // Bold: **teks** atau __teks__
+    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    text = text.replace(/__(.*?)__/g, '<strong>$1</strong>');
+
+    // Italic: *teks* atau _teks_
+    text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    text = text.replace(/_(.*?)_/g, '<em>$1</em>');
+
+    // Bold + Italic: ***teks*** atau ___teks___
+    text = text.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+    text = text.replace(/___(.*?)___/g, '<strong><em>$1</em></strong>');
+
+    // Strikethrough: ~~teks~~
+    text = text.replace(/~~(.*?)~~/g, '<del>$1</del>');
+
+    // Inline code: `kode`
+    text = text.replace(/`(.*?)`/g, '<code class="code-text">$1</code>');
+
+    // Code block: ```language\ncode\n```
+    text = text.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+        const language = lang || 'plaintext';
+        return `
+            <div class="code-block-container">
+                <div class="code-toolbar">
+                    <span class="code-language">${language}</span>
+                    <div class="code-actions">
+                        <button class="code-action-btn" onclick="copyToClipboard(this, '${escapeHtml(code.trim())}')">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                <pre><code class="language-${language}">${escapeHtml(code.trim())}</code></pre>
+            </div>
+        `;
+    });
+
+    // Line breaks
+    text = text.replace(/\n/g, '<br>');
+
+    return text;
+}
+
+<!-- Gunakan di displayResponseWordByWord() -->
+function displayResponseWordByWord(response) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message ai-message';
+    
+    const currentPersona = personas.find(p => p.id === currentPersonaId);
+    messageDiv.innerHTML = `
+        <div class="ai-message-plain">
+            <img src="zarynicon.jpg" class="ai-avatar-small" alt="AI">
+            <div>${applyTextFormatting(response)}</div>
+        </div>
+    `;
+
+    elements.chatMessages.appendChild(messageDiv);
+    elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+}
 
         // ========== INITIALIZATION ==========
         function init() {
@@ -2182,22 +2797,22 @@
             
             // Initialize UI
             updateUI();
+            
+            // Initialize personas
+            renderPersonas();
+            updateCurrentPersonaDisplay();
         }
 
         function loadSavedState() {
-            // Load theme preference
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme) {
                 document.body.className = savedTheme;
                 elements.themeToggle.checked = savedTheme === 'dark-mode';
             }
-
-            // Load current model
             currentModel = localStorage.getItem('currentModel') || 'gemini-flash';
             elements.modelSelect.value = currentModel;
             elements.currentModelName.textContent = `AI Assistant (${MODEL_NAMES[currentModel]})`;
 
-            // Check for logged in user
             const loggedInUser = localStorage.getItem('currentUser');
             if (loggedInUser) {
                 currentUser = JSON.parse(loggedInUser);
@@ -2223,14 +2838,66 @@
             // Form submissions
             elements.loginForm.addEventListener('submit', handleLogin);
             elements.registerForm.addEventListener('submit', handleRegister);
+            
+            // Admin
+            
+           document.getElementById('confirm-password-toggle').addEventListener('click', function () {
+    const passwordField = document.getElementById('confirm-admin-password');
+    const icon = this.querySelector('i');
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        icon.className = 'fas fa-eye-slash';
+    } else {
+        passwordField.type = 'password';
+        icon.className = 'fas fa-eye';
+    }
+});
+            document.getElementById('confirm-action').addEventListener('click', handleAdminAction);
+            document.getElementById('cancel-confirm').addEventListener('click', closeAdminConfirmModal);
+            document.getElementById('close-user-info').addEventListener('click', closeUserInfoModal);
+document.getElementById('change-role-btn').addEventListener('click', changeUserRole);
+document.getElementById('ban-user-btn').addEventListener('click', () => {
+    alert('Ban user functionality would be implemented here');
+});
 
+// Event listener untuk toggle password di modal info user
+document.getElementById('info-password-toggle').addEventListener('click', function() {
+    const passwordField = document.getElementById('info-password');
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+    } else {
+        passwordField.type = 'password';
+        this.innerHTML = '<i class="fas fa-eye"></i>';
+    }
+});
+
+// Event listener untuk tombol reset system
+document.getElementById('reset-system').addEventListener('click', () => {
+    showAdminConfirmModal('reset-system', null);
+});
+
+// Event listener untuk tombol show API key
+document.getElementById('show-api-key').addEventListener('click', function() {
+    const apiKeyField = document.getElementById('api-key');
+    if (apiKeyField.type === 'password') {
+        apiKeyField.type = 'text';
+        apiKeyField.value = 'sk-test-1234567890abcdef'; // Contoh API key
+        this.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Key';
+    } else {
+        apiKeyField.type = 'password';
+        apiKeyField.value = '••••••••••••••••';
+        this.innerHTML = '<i class="fas fa-eye"></i> Show Key';
+    }
+});
+            
             // Sidebar controls
             elements.hamburgerBtn.addEventListener('click', () => elements.sidebar.classList.add('open'));
             elements.closeSidebar.addEventListener('click', () => elements.sidebar.classList.remove('open'));
 
             // Theme toggle
             elements.themeToggle.addEventListener('change', toggleTheme);
-
+            
             // Logout
             elements.logoutBtn.addEventListener('click', handleLogout);
 
@@ -2238,32 +2905,44 @@
             elements.homeLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 showScreen('home');
+                setActiveLink(elements.homeLink);
             });
             elements.chatsLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 showScreen('chat');
+                setActiveLink(elements.chatsLink);
             });
             elements.aiModelsLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 showScreen('models');
+                setActiveLink(elements.aiModelsLink);
             });
             elements.historyLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 showScreen('history');
+                setActiveLink(elements.historyLink);
                 renderHistory();
             });
             elements.accountLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 showScreen('account');
+                setActiveLink(elements.accountLink);
                 renderAccount();
             });
             elements.adminPanelLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 showAdminPanel();
+                setActiveLink(elements.adminPanelLink);
             });
             elements.checkCodeLink.addEventListener('click', (e) => {
                 e.preventDefault();
                 showScreen('checkCode');
+                setActiveLink(elements.checkCodeLink);
+            });
+            elements.personaLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showScreen('persona');
+                setActiveLink(elements.personaLink);
             });
 
             // Chat controls
@@ -2328,75 +3007,68 @@
             elements.codeEditor.addEventListener('input', updateCodeDisplay);
             elements.copyCodeBtn.addEventListener('click', copyCode);
             elements.previewCodeBtn.addEventListener('click', previewCode);
-            elements.fullPreviewCodeBtn.addEventListener('click', fullPreviewCode);
             elements.codeCopyBtn.addEventListener('click', copyCodeBlock);
             elements.codePreviewBtn.addEventListener('click', previewCodeBlock);
             elements.closePreviewBtn.addEventListener('click', closePreview);
-            
-            // Language card selection
             elements.langCards.forEach(card => {
-                card.addEventListener('click', () => {
-                    currentLang = card.dataset.lang;
-                    elements.langCards.forEach(c => c.style.borderColor = '');
-                    card.style.borderColor = 'var(--primary-color)';
+                card.addEventListener('click', (e) => {
+                    currentLang = e.currentTarget.dataset.lang;
                     updateCodeDisplay();
                 });
             });
+            
+            // Persona events
+            elements.savePersonaBtn.addEventListener('click', savePersona);
+        }
+        
+        function setActiveLink(activeLink) {
+            // Remove active class from all sidebar links
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Add active class to the clicked link
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
         }
 
         // ========== AUTHENTICATION FUNCTIONS ==========
         function toggleAuthForms(showRegister = true) {
-            elements.loginFormContainer.classList.toggle('active', !showRegister);
-            elements.registerFormContainer.classList.toggle('active', showRegister);
+            document.getElementById('login-form').classList.toggle('active', !showRegister);
+            document.getElementById('register-form').classList.toggle('active', showRegister);
         }
 
         function handleLogin(e) {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
-
             const user = users.find(u => u.email === email && u.password === password);
             if (!user) return alert('Invalid credentials');
-
             currentUser = user;
             localStorage.setItem('currentUser', JSON.stringify(user));
-            logLogin();
             showAIInterface();
+            logLogin();
         }
-
+        
         function handleRegister(e) {
             e.preventDefault();
             const name = document.getElementById('register-name').value;
             const email = document.getElementById('register-email').value;
             const password = document.getElementById('register-password').value;
-            const confirmPassword = document.getElementById('register-confirm-password').value;
-
-            if (password !== confirmPassword) return alert('Passwords do not match');
+            const confirm = document.getElementById('register-confirm-password').value;
+            if (password !== confirm) return alert('Passwords do not match');
             if (users.some(u => u.email === email)) return alert('Email already registered');
-
-            const newUser = {
-                name,
-                email,
-                password,
-                isAdmin: false,
-                joinDate: new Date().toLocaleDateString(),
-                loginHistory: [],
-                chatHistory: [],
-                totalRequests: 0
-            };
-            
+            const newUser = { name, email, password, isAdmin: false, joinDate: new Date().toLocaleDateString(), loginHistory: [], chatHistory: [], totalRequests: 0 };
             users.push(newUser);
             localStorage.setItem('users', JSON.stringify(users));
-            
             currentUser = newUser;
             localStorage.setItem('currentUser', JSON.stringify(newUser));
-            logLogin();
             showAIInterface();
-            
-            // Switch back to login form for next time
             toggleAuthForms(false);
+            logLogin();
         }
-
+        
         function handleLogout() {
             currentUser = null;
             localStorage.removeItem('currentUser');
@@ -2433,18 +3105,15 @@
         function showAIInterface() {
             elements.authContainer.style.display = 'none';
             elements.aiContainer.style.display = 'block';
-
-            if (currentUser.isAdmin) {
-                document.body.classList.add('is-admin');
-                updateAdminStats();
-            }
-
-            updateUserStats();
+            if (currentUser && currentUser.isAdmin) document.body.classList.add('is-admin');
             showScreen('chat');
         }
 
         function showScreen(screenName) {
-            Object.values(elements.screens).forEach(s => s.classList.remove('active'));
+            Object.values(elements.screens).forEach(s => {
+                s.classList.remove('active');
+            });
+            
             if (elements.screens[screenName]) {
                 elements.screens[screenName].classList.add('active');
             }
@@ -2455,18 +3124,13 @@
             elements.aiContainer.style.display = 'none';
             elements.adminPanel.classList.remove('hidden');
             updateAdminStats();
-            renderUserTable();
+            renderEnhancedUserTable();
         }
 
         function toggleTheme() {
             const isDark = elements.themeToggle.checked;
             document.body.className = isDark ? 'dark-mode' : 'light-mode';
             localStorage.setItem('theme', isDark ? 'dark-mode' : 'light-mode');
-            
-            // Admin panel stays visible during theme change
-            if (currentUser?.isAdmin && !elements.adminPanel.classList.contains('hidden')) {
-                elements.adminPanel.classList.remove('hidden');
-            }
         }
 
         function togglePasswordVisibility() {
@@ -2518,168 +3182,130 @@
             const storageUsed = Math.round(JSON.stringify(localStorage).length / 1024);
             elements.storageUsed.textContent = `${storageUsed} KB`;
         }
-
-        // ========== USER MANAGEMENT ==========
-        function renderUserTable(filter = '') {
-            elements.userTableBody.innerHTML = '';
-            const filteredUsers = users.filter(user => 
-                user.name.toLowerCase().includes(filter.toLowerCase())
-            );
+        
+        // ========== PERSONA FUNCTIONS ==========
+        function savePersona() {
+            const name = elements.personaName.value.trim();
+            const description = elements.personaDescription.value.trim();
+            const instructions = elements.personaInstructions.value.trim();
+            const icon = elements.personaIcon.value;
             
-            filteredUsers.forEach(user => {
-                const row = document.createElement('tr');
-                row.style.cursor = 'pointer';
-                
-                // Determine role icon and class
-                let roleIcon, roleClass;
-                if (user.isAdmin) {
-                    roleIcon = '<i class="fas fa-shield-alt"></i>';
-                    roleClass = 'role-admin';
-                } else {
-                    roleIcon = '<i class="fas fa-user"></i>';
-                    roleClass = 'role-user';
-                }
-                
-                row.innerHTML = `
-                    <td><strong>${user.name}</strong></td>
-                    <td><span class="user-role ${roleClass}">${roleIcon} ${user.isAdmin ? 'Admin' : 'User'}</span></td>
-                    <td>
-                        <div class="action-menu">
-                            <button class="action-menu-btn">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <div class="action-menu-content">
-                                <a href="#" class="view-user-btn" data-email="${user.email}">
-                                    <i class="fas fa-eye"></i> View Details
-                                </a>
-                            </div>
+            if (!name || !instructions) {
+                alert('Please provide at least a name and instructions');
+                return;
+            }
+            
+            const newPersona = {
+                id: 'custom-' + Date.now(),
+                name,
+                description,
+                instructions,
+                icon
+            };
+            
+            personas.push(newPersona);
+            localStorage.setItem('personas', JSON.stringify(personas));
+            
+            // Reset form
+            elements.personaName.value = '';
+            elements.personaDescription.value = '';
+            elements.personaInstructions.value = '';
+            
+            // Refresh persona list
+            renderPersonas();
+        }
+
+        function renderPersonas() {
+            elements.personaList.innerHTML = '';
+            
+            personas.forEach(persona => {
+                const personaElement = document.createElement('div');
+                personaElement.className = 'persona-item';
+                personaElement.innerHTML = `
+                    <div class="persona-header">
+                        <div class="persona-icon">
+                            <i class="${persona.icon}"></i>
                         </div>
-                    </td>
+                        <div>
+                            <h3 class="persona-name">${persona.name} ${persona.id === currentPersonaId ? '<span class="active-badge">ACTIVE</span>' : ''}</h3>
+                            <p class="persona-description">${persona.description}</p>
+                        </div>
+                    </div>
+                    <div class="persona-actions">
+                        <button class="btn btn-sm ${persona.id === currentPersonaId ? 'btn-primary' : 'btn-outline'} btn-select" data-id="${persona.id}">
+                            <i class="fas ${persona.id === currentPersonaId ? 'fa-check' : 'fa-user'}"></i>
+                            ${persona.id === currentPersonaId ? 'Selected' : 'Select'}
+                        </button>
+                        ${persona.id.startsWith('custom-') ? `
+                        <button class="btn btn-sm btn-danger btn-delete" data-id="${persona.id}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>` : ''}
+                    </div>
                 `;
                 
-                // Add click event to view user details
-                row.addEventListener('click', () => showUserInfoModal(user));
-                
-                // Add event listener to action menu buttons
-                const viewBtn = row.querySelector('.view-user-btn');
-                if (viewBtn) {
-                    viewBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        showUserInfoModal(user);
-                    });
-                }
-                
-                elements.userTableBody.appendChild(row);
+                elements.personaList.appendChild(personaElement);
+            });
+            
+            // Add event listeners to select and delete buttons
+            document.querySelectorAll('.btn-select').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const personaId = e.target.closest('button').getAttribute('data-id');
+                    selectPersona(personaId);
+                });
+            });
+            
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const personaId = e.target.closest('button').getAttribute('data-id');
+                    deletePersona(personaId);
+                });
             });
         }
 
-        function filterUsers() {
-            const searchTerm = elements.userSearch.value;
-            renderUserTable(searchTerm);
-        }
-
-        function showUserInfoModal(user) {
-            currentViewedUser = user;
+        function selectPersona(personaId) {
+            currentPersonaId = personaId;
+            localStorage.setItem('currentPersonaId', personaId);
+            updateCurrentPersonaDisplay();
+            renderPersonas();
             
-            // Isi data user ke dalam modal
-            document.getElementById('info-username').value = user.name;
-            document.getElementById('info-email').value = user.email;
-            document.getElementById('info-password').value = user.password;
-            document.getElementById('info-role').value = user.isAdmin ? 'Admin' : 'User';
-            
-            // Set role badge
-            const roleBadge = document.getElementById('role-badge');
-            roleBadge.textContent = user.isAdmin ? 'ADMIN' : 'USER';
-            roleBadge.className = user.isAdmin ? 'role-badge admin' : 'role-badge user';
-            
-            // Tampilkan modal
-            document.getElementById('user-info-modal').style.display = 'flex';
-            
-            // Tambahkan event listeners
-            document.getElementById('info-password-toggle').addEventListener('click', togglePasswordVisibility);
-            document.getElementById('change-role-btn').addEventListener('click', changeUserRole);
-            document.getElementById('ban-user-btn').addEventListener('click', confirmBanUser);
-            document.getElementById('close-user-info').addEventListener('click', closeUserInfoModal);
-        }
-
-        function closeUserInfoModal() {
-            document.getElementById('user-info-modal').style.display = 'none';
-            currentViewedUser = null;
-        }
-
-        function confirmBanUser() {
-            if (!currentViewedUser) return;
-            
-            if (confirm(`Are you sure you want to ban ${currentViewedUser.name} (${currentViewedUser.email})? This action cannot be undone.`)) {
-                banUser(currentViewedUser.email);
+            // Show success message
+            const persona = personas.find(p => p.id === personaId);
+            if (persona) {
+                alert(`"${persona.name}" persona is now active!`);
             }
         }
 
-        function changeUserRole() {
-            if (!currentViewedUser) return;
-            
-            const user = users.find(u => u.email === currentViewedUser.email);
-            if (!user) return;
-            
-            user.isAdmin = !user.isAdmin;
-            localStorage.setItem('users', JSON.stringify(users));
-            renderUserTable(elements.userSearch.value);
-            closeUserInfoModal();
-            alert(`User role changed to ${user.isAdmin ? 'Admin' : 'User'}`);
-        }
-
-        function banUser(email) {
-            if (email === currentUser.email) {
-                alert('You cannot ban yourself');
+        function deletePersona(personaId) {
+            if (personaId === currentPersonaId) {
+                alert('Cannot delete the currently active persona. Please select another persona first.');
                 return;
             }
             
-            users = users.filter(u => u.email !== email);
-            localStorage.setItem('users', JSON.stringify(users));
-            renderUserTable(elements.userSearch.value);
-            closeUserInfoModal();
-            alert('User has been banned');
-        }
-
-        function closeUserDetailModal() {
-            elements.userDetailModal.style.display = 'none';
-            selectedUserEmail = null;
-        }
-
-        function makeSelectedUserAdmin() {
-            if (!selectedUserEmail || selectedUserEmail === currentUser.email) {
-                alert('Cannot change admin status');
-                return;
-            }
-            
-            const user = users.find(u => u.email === selectedUserEmail);
-            if (user) {
-                user.isAdmin = true;
-                localStorage.setItem('users', JSON.stringify(users));
-                updateAdminStats();
-                renderUserTable(elements.userSearch.value);
-                closeUserDetailModal();
-                alert(`${user.name} is now an admin`);
+            if (confirm('Are you sure you want to delete this persona? This action cannot be undone.')) {
+                personas = personas.filter(p => p.id !== personaId);
+                localStorage.setItem('personas', JSON.stringify(personas));
+                renderPersonas();
             }
         }
 
-        function deleteSelectedUser() {
-            if (!selectedUserEmail || selectedUserEmail === currentUser.email) {
-                alert('Cannot delete yourself');
-                return;
-            }
-            
-            if (confirm('Are you sure you want to delete this user?')) {
-                users = users.filter(u => u.email !== selectedUserEmail);
-                localStorage.setItem('users', JSON.stringify(users));
-                updateAdminStats();
-                renderUserTable(elements.userSearch.value);
-                closeUserDetailModal();
-                alert('User deleted successfully');
+        function updateCurrentPersonaDisplay() {
+            const currentPersona = personas.find(p => p.id === currentPersonaId);
+            if (currentPersona) {
+                elements.currentPersonaDisplay.innerHTML = `
+                    <div class="persona-header">
+                        <div class="persona-icon">
+                            <i class="${currentPersona.icon}"></i>
+                        </div>
+                        <div>
+                            <h3 class="persona-name">${currentPersona.name}</h3>
+                            <span class="persona-badge">Active</span>
+                        </div>
+                    </div>
+                    <p class="persona-description">${currentPersona.description}</p>
+                `;
             }
         }
 
-        // ========== CHAT FUNCTIONS ==========
         async function sendMessage() {
             const message = elements.userInput.value.trim();
             if (!message) return;
@@ -2809,6 +3435,13 @@
                 console.error(err);
             }
         }
+        
+        function removeLoadingIndicator(id) {
+            const loadingElement = document.getElementById(id);
+            if (loadingElement) {
+                loadingElement.remove();
+            }
+        }
 
         function processCodeBlocks(text) {
             // Split text into parts with code blocks
@@ -2860,167 +3493,109 @@
                 .replace(/'/g, "&#039;");
         }
 
-        function copyToClipboard(button, text) {
-            // Create a temporary textarea element
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            textarea.style.position = 'fixed';  // Prevent scrolling to bottom
-            document.body.appendChild(textarea);
-            textarea.select();
-            
-            try {
-                const successful = document.execCommand('copy');
-                const msg = successful ? 'successful' : 'unsuccessful';
-                console.log('Copying text command was ' + msg);
-                
-                // Show feedback to user
-                const originalText = button.innerHTML;
-                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                setTimeout(() => {
-                    button.innerHTML = originalText;
-                }, 2000);
-            } catch (err) {
-                console.error('Failed to copy text: ', err);
-                
-                // Fallback if execCommand doesn't work
-                navigator.clipboard.writeText(text).then(() => {
-                    const originalText = button.innerHTML;
-                    button.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                    setTimeout(() => {
-                        button.innerHTML = originalText;
-                    }, 2000);
-                }).catch(err => {
-                    console.error('Failed to copy text: ', err);
-                    button.innerHTML = '<i class="fas fa-times"></i> Failed';
-                    setTimeout(() => {
-                        button.innerHTML = originalText;
-                    }, 2000);
-                });
-            }
-            
-            document.body.removeChild(textarea);
-        }
-
-        function previewCodeInModal(button, code, lang) {
-            if (lang === 'html') {
-                // Create a new window for preview
-                const previewWindow = window.open('', '_blank');
-                previewWindow.document.open();
-                previewWindow.document.write(`
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>Code Preview</title>
-                        <style>
-                            body { margin: 0; padding: 20px; background-color: #f5f5f5; }
-                            .preview-container { 
-                                max-width: 100%; 
-                                border: 1px solid #ddd; 
-                                background-color: white; 
-                                padding: 20px; 
-                                border-radius: 5px; 
-                                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        <div class="preview-container">
-                            ${code}
-                        </div>
-                    </body>
-                    </html>
-                `);
-                previewWindow.document.close();
-            } else {
-                alert('Preview is only available for HTML code');
-            }
-        }
-
         function addMessage(text, sender, id = null) {
-            const messageDiv = document.createElement('div');
-            
-            if (id) messageDiv.id = id;
+    const messageDiv = document.createElement('div');
+    
+    if (id) messageDiv.id = id;
 
-            if (sender === 'ai') {
-                messageDiv.classList.add('ai-message-plain');
-                
-                if (text === '<div class="spinner"></div>') {
-                    messageDiv.innerHTML = `
-                        <div class="loading-container">
-                            <div class="loading-spinner"></div>
-                            <span>Thinking...</span>
-                        </div>
-                    `;
-                } else {
-                    // Bersihkan teks dari baris kosong berlebihan
-                    const cleanedText = text.replace(/\n\s*\n\s*\n/g, '\n\n');
-                    
-                    messageDiv.innerHTML = `
-                        <img src="zarynicon.jpg" class="ai-avatar-small" alt="ZarynAI">
-                        <div class="ai-message-content">${cleanedText}</div>
-                    `;
-                    
-                    // Jika bukan loading indicator, tambahkan ke queue untuk efek mengetik
-                    messageQueue.push({ 
-                        text: cleanedText, 
-                        element: messageDiv.querySelector('.ai-message-content') 
-                    });
-                    processMessageQueue();
-                }
-            } else {
-                messageDiv.classList.add('simplified-message', 'simplified-user-message');
-                messageDiv.textContent = text;
-            }
+    if (sender === 'ai') {
+        messageDiv.classList.add('ai-message-plain');
+        
+        if (text === '<div class="spinner"></div>') {
+            messageDiv.innerHTML = `
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <span>Thinking...</span>
+                </div>
+            `;
+        } else {
+            // Bersihkan teks dari baris kosong berlebihan
+            const cleanedText = text.replace(/\n\s*\n\s*\n/g, '\n\n');
             
-            elements.chatMessages.appendChild(messageDiv);
-            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+            messageDiv.innerHTML = `
+                <img src="zarynicon.jpg" class="ai-avatar-small" alt="ZarynAI">
+                <div class="ai-message-content">${cleanedText}</div>
+            `;
+            
+            // Jika bukan loading indicator, tambahkan ke queue untuk efek mengetik
+            messageQueue.push({ 
+                text: cleanedText, 
+                element: messageDiv.querySelector('.ai-message-content') 
+            });
+            processMessageQueue();
         }
+    } else {
+        messageDiv.classList.add('simplified-message', 'simplified-user-message');
+        messageDiv.textContent = text;
+    }
+    
+    elements.chatMessages.appendChild(messageDiv);
+    elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+}
 
         function processMessageQueue() {
-            if (isTyping || messageQueue.length === 0) return;
+    if (isTyping || messageQueue.length === 0) return;
+    
+    isTyping = true;
+    const { text, element } = messageQueue.shift();
+    
+    if (text.includes('```')) {
+        const processed = processCodeBlocks(text);
+        element.innerHTML = processed;
+        Prism.highlightAllUnder(element.parentElement);
+        isTyping = false;
+        if (messageQueue.length > 0) {
+            processMessageQueue();
+        }
+        return;
+    }
+    
+    const words = text.split(' ');
+    let i = 0;
+    const speed = 50;
+    
+    const typeWriter = () => {
+        if (i < words.length) {
+            element.innerHTML = applyTextFormatting(words.slice(0, i+1).join(' '));
+            i++;
+            elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
             
-            isTyping = true;
-            const { text, element } = messageQueue.shift();
-            
-            if (text.includes('```')) {
-                const processed = processCodeBlocks(text);
-                element.innerHTML = processed;
-                Prism.highlightAllUnder(element.parentElement);
-                isTyping = false;
-                if (messageQueue.length > 0) {
-                    processMessageQueue();
-                }
-                return;
+            const delay = /[.,!?;:]$/.test(words[i-1]) ? speed * 3 : speed;
+            setTimeout(typeWriter, delay);
+        } else {
+            isTyping = false;
+            if (messageQueue.length > 0) {
+                processMessageQueue();
             }
+        }
+    };
+    
+    typeWriter();
+}
+
+        function saveToHistory(userMessage, aiResponse) {
+            if (!currentUser) return;
             
-            const words = text.split(' ');
-            let i = 0;
-            const speed = 50;
-            
-            const typeWriter = () => {
-                if (i < words.length) {
-                    element.innerHTML = applyTextFormatting(words.slice(0, i+1).join(' '));
-                    i++;
-                    elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
-                    
-                    const delay = /[.,!?;:]$/.test(words[i-1]) ? speed * 3 : speed;
-                    setTimeout(typeWriter, delay);
-                } else {
-                    isTyping = false;
-                    if (messageQueue.length > 0) {
-                        processMessageQueue();
-                    }
-                }
+            const timestamp = new Date().toISOString();
+            const entry = {
+                user: userMessage,
+                ai: aiResponse,
+                model: currentModel,
+                timestamp
             };
             
-            typeWriter();
-        }
-
-        function removeLoadingIndicator(id) {
-            const loadingElement = document.getElementById(id);
-            if (loadingElement) {
-                loadingElement.remove();
-            }
+            // Add to conversation history
+            conversationHistory.unshift(entry);
+            conversationHistory = conversationHistory.slice(0, 100);
+            localStorage.setItem('conversationHistory', JSON.stringify(conversationHistory));
+            
+            // Add to user's chat history
+            currentUser.chatHistory.unshift(entry);
+            currentUser.chatHistory = currentUser.chatHistory.slice(0, 100);
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Update UI
+            updateUI();
         }
 
         // ========== HISTORY FUNCTIONS ==========
@@ -3132,6 +3707,31 @@
             }, 100);
         }
 
+        function viewHistoryItem(index) {
+            const item = currentUser.chatHistory[index];
+            if (!item) return;
+            
+            // Clear chat and show this conversation
+            elements.chatMessages.innerHTML = '';
+            
+            // Add user message
+            addMessage(item.user, 'user');
+            
+            // Add AI response
+            addMessage(item.ai, 'ai');
+            
+            // Switch to chat screen
+            showScreen('chat');
+        }
+
+        function deleteHistoryItem(index) {
+            if (confirm('Are you sure you want to delete this conversation?')) {
+                currentUser.chatHistory.splice(index, 1);
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                renderHistory();
+            }
+        }
+
         function clearHistory() {
             if (confirm('Are you sure you want to clear your conversation history?')) {
                 conversationHistory = [];
@@ -3152,38 +3752,333 @@
             
             elements.accountName.value = currentUser.name;
             elements.accountEmail.value = currentUser.email;
-            elements.accountPassword.value = '••••••••';
-            elements.accountPassword.type = 'password';
-            elements.togglePassword.className = 'fas fa-eye password-toggle';
             
             // Render login history
-            renderLoginHistory();
-        }
-
-        function renderLoginHistory() {
             elements.loginHistoryList.innerHTML = '';
             
-            const historyToShow = currentUser ? currentUser.loginHistory : loginHistory;
-            
-            if (historyToShow.length === 0) {
-                elements.loginHistoryList.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 20px;">No login history available</td></tr>';
+            if (currentUser.loginHistory.length === 0) {
+                elements.loginHistoryList.innerHTML = '<tr><td colspan="3">No login history yet</td></tr>';
                 return;
             }
             
-            historyToShow.slice(0, 10).forEach(entry => {
+            currentUser.loginHistory.forEach(entry => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td><i class="fas fa-calendar"></i> ${entry.date}</td>
-                    <td><i class="fas fa-clock"></i> ${entry.time}</td>
-                    <td><i class="fas fa-network-wired"></i> ${entry.ip}</td>
+                    <td>${entry.date}</td>
+                    <td>${entry.time}</td>
+                    <td>${entry.ip}</td>
                 `;
                 elements.loginHistoryList.appendChild(row);
             });
         }
 
         // ========== ADMIN FUNCTIONS ==========
+        function renderEnhancedUserTable() {
+  const tbody = document.getElementById('user-table-body');
+  tbody.innerHTML = ''; // kosongkan tabel
+
+  users.forEach(user => {
+    const tr = document.createElement('tr');
+
+    tr.innerHTML = `
+      <td>${user.name}</td>
+      <td>
+        <span class="user-role ${user.isAdmin ? 'role-admin' : 'role-user'}">
+          <i class="fas ${user.isAdmin ? 'fa-user-shield' : 'fa-user'}"></i>
+          ${user.isAdmin ? 'Admin' : 'User'}
+        </span>
+      </td>
+      <td>
+        <div class="action-menu">
+          <button class="action-menu-btn">⋮</button>
+          <div class="action-menu-content">
+            <a href="#" class="view-user" data-email="${user.email}">
+              <i class="fas fa-eye"></i> View
+            </a>
+            <a href="#" class="edit-user" data-email="${user.email}">
+              <i class="fas fa-edit"></i> Edit
+            </a>
+            ${!user.isAdmin ? `
+            <a href="#" class="make-admin" data-email="${user.email}">
+              <i class="fas fa-user-shield"></i> Make Admin
+            </a>` : ''}
+            <a href="#" class="delete-user" data-email="${user.email}">
+              <i class="fas fa-trash"></i> Delete
+            </a>
+          </div>
+        </div>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+
+  // Re-bind event listeners setelah render
+  tbody.querySelectorAll('.view-user').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      viewUserDetails(a.dataset.email);
+    });
+  });
+
+  tbody.querySelectorAll('.make-admin').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      promptMakeAdmin(a.dataset.email);
+    });
+  });
+
+  tbody.querySelectorAll('.delete-user').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      promptDeleteUser(a.dataset.email);
+    });
+  });
+
+  tbody.querySelectorAll('.edit-user').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      alert(`Edit user: ${a.dataset.email} (belum diimplementasikan)`);
+    });
+  });
+}
+
+        function filterUsers() {
+            const searchTerm = elements.userSearch.value.toLowerCase();
+            const rows = elements.userTableBody.querySelectorAll('tr');
+            
+            rows.forEach(row => {
+                const name = row.querySelector('td').textContent.toLowerCase();
+                if (name.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function viewUserDetails(email) {
+            const user = users.find(u => u.email === email);
+            if (!user) return;
+            
+            currentViewedUser = user;
+            
+            // Populate modal
+            elements.detailName.value = user.name;
+            elements.detailEmail.value = user.email;
+            elements.detailPassword.value = user.password;
+            elements.detailRole.value = user.isAdmin ? 'Admin' : 'User';
+            
+            // Show modal
+            elements.userDetailModal.style.display = 'flex';
+        }
+
+        function closeUserDetailModal() {
+            elements.userDetailModal.style.display = 'none';
+            currentViewedUser = null;
+        }
+
+        function makeSelectedUserAdmin() {
+            if (!currentViewedUser) return;
+            
+            if (confirm(`Make ${currentViewedUser.name} an admin?`)) {
+                currentViewedUser.isAdmin = true;
+                saveUsers();
+                closeUserDetailModal();
+                renderEnhancedUserTable();
+            }
+        }
+
+        function deleteSelectedUser() {
+            if (!currentViewedUser) return;
+            
+            if (confirm(`Permanently delete ${currentViewedUser.name}?`)) {
+                users = users.filter(u => u.email !== currentViewedUser.email);
+                saveUsers();
+                closeUserDetailModal();
+                renderEnhancedUserTable();
+            }
+        }
+
+        function promptMakeAdmin(email) {
+            const user = users.find(u => u.email === email);
+            if (!user) return;
+            
+            selectedUserEmail = email;
+            currentAdminAction = 'make-admin';
+            
+            // Populate confirmation modal
+            document.getElementById('confirm-admin-email').value = currentUser.email;
+            document.getElementById('confirm-admin-password').value = '';
+            
+            // Show modal
+            document.getElementById('admin-confirm-modal').style.display = 'flex';
+        }
+
+        function promptDeleteUser(email) {
+            const user = users.find(u => u.email === email);
+            if (!user) return;
+            
+            selectedUserEmail = email;
+            currentAdminAction = 'delete-user';
+            
+            // Populate confirmation modal
+            document.getElementById('confirm-admin-email').value = currentUser.email;
+            document.getElementById('confirm-admin-password').value = '';
+            
+            // Show modal
+            document.getElementById('admin-confirm-modal').style.display = 'flex';
+        }
+        
+        function showAdminConfirmModal(action, email) {
+    selectedUserEmail = email;
+    currentAdminAction = action;
+    
+    // Isi form konfirmasi
+    document.getElementById('confirm-admin-email').value = currentUser.email;
+    document.getElementById('confirm-admin-password').value = '';
+    
+    // Tampilkan modal
+    document.getElementById('admin-confirm-modal').style.display = 'flex';
+}
+
+        function closeAdminConfirmModal() {
+    document.getElementById('admin-confirm-modal').style.display = 'none';
+}
+
+function handleAdminAction() {
+    const password = document.getElementById('confirm-admin-password').value;
+    if (password !== currentUser.password) {
+        alert('Invalid admin password');
+        return;
+    }
+
+    const user = users.find(u => u.email === selectedUserEmail);
+    if (!user) {
+        alert('User not found');
+        return;
+    }
+
+    switch (currentAdminAction) {
+        case 'make-admin':
+            user.isAdmin = true;
+            alert(`${user.name} has been made an admin`);
+            break;
+
+        case 'delete-user':
+            if (user.email === currentUser.email) {
+                alert('You cannot delete yourself');
+                return;
+            }
+            users = users.filter(u => u.email !== user.email);
+            alert(`${user.name} has been deleted`);
+            break;
+
+        case 'reset-system':
+            if (confirm('WARNING: This will reset ALL data. Are you sure?')) {
+                localStorage.clear();
+                location.reload();
+                return;
+            }
+            break;
+    }
+
+    localStorage.setItem('users', JSON.stringify(users));
+    closeAdminConfirmModal();
+    renderEnhancedUserTable();
+}
+
+        function showUserInfoModal(email) {
+    const user = users.find(u => u.email === email);
+    if (!user) return;
+    
+    // Isi form user info
+    document.getElementById('info-username').value = user.name;
+    document.getElementById('info-email').value = user.email;
+    document.getElementById('info-password').value = user.password;
+    document.getElementById('info-role').value = user.isAdmin ? 'Admin' : 'User';
+    
+    // Atur badge role
+    const roleBadge = document.getElementById('role-badge');
+    roleBadge.textContent = user.isAdmin ? 'Admin' : 'User';
+    roleBadge.className = user.isAdmin ? 'role-badge admin' : 'role-badge user';
+    
+    // Tampilkan modal
+    document.getElementById('user-info-modal').style.display = 'flex';
+}
+
+// Fungsi untuk menutup modal info user
+function closeUserInfoModal() {
+    document.getElementById('user-info-modal').style.display = 'none';
+}
+
+        function changeUserRole() {
+    const userEmail = document.getElementById('info-email').value;
+    const user = users.find(u => u.email === userEmail);
+    
+    if (!user) return;
+    
+    user.isAdmin = !user.isAdmin;
+    localStorage.setItem('users', JSON.stringify(users));
+    
+    // Update UI
+    document.getElementById('info-role').value = user.isAdmin ? 'Admin' : 'User';
+    const roleBadge = document.getElementById('role-badge');
+    roleBadge.textContent = user.isAdmin ? 'Admin' : 'User';
+    roleBadge.className = user.isAdmin ? 'role-badge admin' : 'role-badge user';
+    
+    alert(`User role changed to ${user.isAdmin ? 'Admin' : 'User'}`);
+    renderEnhancedUserTable();
+}
+
+        function renderEnhancedUserTable() {
+    const userTableBody = document.getElementById('user-table-body');
+    userTableBody.innerHTML = '';
+    
+    users.forEach(user => {
+        const row = document.createElement('tr');
+        
+        row.innerHTML = `
+            <td>${user.name}</td>
+            <td>
+                <span class="user-role ${user.isAdmin ? 'role-admin' : 'role-user'}">
+                    <i class="fas ${user.isAdmin ? 'fa-user-shield' : 'fa-user'}"></i>
+                    ${user.isAdmin ? 'Admin' : 'User'}
+                </span>
+            </td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn btn-sm btn-outline" onclick="showUserInfoModal('${user.email}')">
+                        <i class="fas fa-eye"></i> View
+                    </button>
+                    ${!user.isAdmin ? `
+                    <button class="btn btn-sm btn-primary" onclick="showAdminConfirmModal('make-admin', '${user.email}')">
+                        <i class="fas fa-user-shield"></i> Make Admin
+                    </button>
+                    ` : ''}
+                    <button class="btn btn-sm btn-danger" onclick="showAdminConfirmModal('delete-user', '${user.email}')">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </div>
+            </td>
+        `;
+        
+        userTableBody.appendChild(row);
+    });
+}
+
+        function saveUsers() {
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // If we modified the current user, update local storage
+            if (currentUser && currentViewedUser && currentUser.email === currentViewedUser.email) {
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            }
+        }
+
+        // ========== SYSTEM FUNCTIONS ==========
         function resetSystem() {
-            if (confirm('WARNING: This will reset all system data. Are you sure?')) {
+            if (confirm('WARNING: This will reset ALL data including users, history, and settings. Are you sure?')) {
                 localStorage.clear();
                 location.reload();
             }
@@ -3195,9 +4090,39 @@
             if (!file) return;
             
             const reader = new FileReader();
-            reader.onload = (event) => {
-                elements.codeEditor.value = event.target.result;
+            reader.onload = function(e) {
+                elements.codeEditor.value = e.target.result;
                 updateCodeDisplay();
+                
+                // Detect language from file extension
+                const ext = file.name.split('.').pop().toLowerCase();
+                const langMap = {
+                    'html': 'html', 'htm': 'html',
+                    'css': 'css',
+                    'js': 'javascript', 'mjs': 'javascript', 'cjs': 'javascript',
+                    'ts': 'typescript',
+                    'json': 'json',
+                    'xml': 'xml',
+                    'php': 'php',
+                    'py': 'python',
+                    'java': 'java',
+                    'c': 'c', 'h': 'c',
+                    'cpp': 'cpp', 'cc': 'cpp', 'cxx': 'cpp', 'hpp': 'cpp',
+                    'cs': 'csharp',
+                    'go': 'go',
+                    'rs': 'rust',
+                    'swift': 'swift',
+                    'kt': 'kotlin', 'kts': 'kotlin',
+                    'rb': 'ruby',
+                    'Dockerfile': 'dockerfile',
+                    'yml': 'yaml', 'yaml': 'yaml',
+                    'md': 'markdown'
+                };
+                
+                if (langMap[ext]) {
+                    currentLang = langMap[ext];
+                    updateCodeDisplay();
+                }
             };
             reader.readAsText(file);
         }
@@ -3209,70 +4134,117 @@
                 return;
             }
             
-            elements.codeContent.textContent = code;
-            elements.codeContent.className = `language-${currentLang}`;
-            elements.codeLanguageLabel.textContent = currentLang.toUpperCase();
-            
-            // Highlight the code
-            Prism.highlightElement(elements.codeContent);
-            
             elements.codeDisplay.classList.remove('hidden');
+            elements.codeContent.textContent = code;
+            elements.codeLanguageLabel.textContent = currentLang;
+            elements.codeContent.className = `language-${currentLang}`;
+            
+            // Highlight syntax
+            Prism.highlightElement(elements.codeContent);
         }
 
         function copyCode() {
-            navigator.clipboard.writeText(elements.codeEditor.value).then(() => {
-                alert('Code copied to clipboard!');
+            const code = elements.codeEditor.value;
+            if (!code) return;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                showLanguageBubble('Code copied to clipboard!');
+            });
+        }
+
+        function copyCodeBlock() {
+            const code = elements.codeEditor.value;
+            if (!code) return;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                showLanguageBubble('Code copied to clipboard!');
             });
         }
 
         function previewCode() {
+            const code = elements.codeEditor.value;
+            if (!code) return;
+            
             if (currentLang === 'html') {
-                elements.codePreviewFrame.srcdoc = elements.codeEditor.value;
-                elements.codePreviewContainer.style.display = 'block';
+                elements.codePreviewFrame.srcdoc = code;
             } else {
-                alert('Preview is only available for HTML code');
+                elements.codePreviewFrame.srcdoc = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Code Preview</title>
+                        <style>
+                            body { padding: 20px; font-family: Arial, sans-serif; }
+                            pre { background: #f5f5f5; padding: 15px; border-radius: 5px; }
+                        </style>
+                    </head>
+                    <body>
+                        <pre>${escapeHtml(code)}</pre>
+                    </body>
+                    </html>
+                `;
             }
+            
+            elements.codePreviewContainer.style.display = 'block';
         }
-
-        function fullPreviewCode() {
-            if (currentLang === 'html') {
-                const win = window.open('', '_blank');
-                win.document.write(elements.codeEditor.value);
-                win.document.close();
-            } else {
-                alert('Full preview is only available for HTML code');
-            }
-        }
-
-        function copyCodeBlock() {
-            navigator.clipboard.writeText(elements.codeEditor.value).then(() => {
-                const originalText = elements.codeCopyBtn.innerHTML;
-                elements.codeCopyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-                setTimeout(() => {
-                    elements.codeCopyBtn.innerHTML = originalText;
-                }, 2000);
-            });
-        }        
 
         function previewCodeBlock() {
+            const code = elements.codeEditor.value;
+            if (!code) return;
+            
             if (currentLang === 'html') {
-                elements.codePreviewFrame.srcdoc = elements.codeEditor.value;
-                elements.codePreviewContainer.style.display = 'block';
+                elements.codePreviewFrame.srcdoc = code;
             } else {
-                alert('Preview is only available for HTML code');
+                elements.codePreviewFrame.srcdoc = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Code Preview</title>
+                        <style>
+                            body { padding: 20px; font-family: Arial, sans-serif; }
+                            pre { background: #f5f5f5; padding: 15px; border-radius: 5px; }
+                        </style>
+                    </head>
+                    <body>
+                        <pre>${escapeHtml(code)}</pre>
+                    </body>
+                    </html>
+                `;
             }
+            
+            elements.codePreviewContainer.style.display = 'block';
         }
 
         function closePreview() {
             elements.codePreviewContainer.style.display = 'none';
         }
 
-        // Initialize the application
-        init();
+        function showLanguageBubble(message) {
+            const bubble = document.createElement('div');
+            bubble.className = 'language-bubble show';
+            bubble.textContent = message;
+            document.body.appendChild(bubble);
+            
+            setTimeout(() => {
+                bubble.classList.remove('show');
+                setTimeout(() => bubble.remove(), 300);
+            }, 2000);
+        }
+
+        // ========== UTILITY FUNCTIONS ==========
+        function copyToClipboard(button, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i>';
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                }, 2000);
+            });
+        }
+
+        // ========== INITIALIZATION ==========
+        document.addEventListener('DOMContentLoaded', init);
         
-        // Make functions available globally for inline event handlers
-        window.copyToClipboard = copyToClipboard;
-        window.previewCodeInModal = previewCodeInModal;
     </script>
 </body>
 </html>
